@@ -28,6 +28,8 @@ Handle hIsValidObserverTarget;
 
 bool g_bCheckNullPtr = false;
 
+EngineVersion g_iEngineVersion;
+
 bool g_bLate = false;
 
 public Plugin myinfo =
@@ -39,7 +41,7 @@ public Plugin myinfo =
 	url			= ""
 }
 
-// Spectator Movement modes (from smlib)
+// Spectator Movement modes
 enum Obs_Mode
 {
 	OBS_MODE_NONE = 0,	// not in spectator mode
@@ -54,6 +56,20 @@ enum Obs_Mode
 	NUM_OBSERVER_MODES
 };
 
+// Spectator Movement modes
+enum Obs_Mode_CSGO
+{
+	OBS_MODE_CSGO_NONE = 0,	// not in spectator mode
+	OBS_MODE_CSGO_DEATHCAM,	// special mode for death cam animation
+	OBS_MODE_CSGO_FREEZECAM,	// zooms to a target, and freeze-frames on them
+	OBS_MODE_CSGO_FIXED,		// view from a fixed camera position
+	OBS_MODE_CSGO_IN_EYE,	// follow a player in first person view
+	OBS_MODE_CSGO_CHASE,		// follow a player in third person view
+	OBS_MODE_CSGO_ROAMING,	// free roaming
+
+	NUM_OBSERVER_MODES_CSGO,
+};
+
 enum LimitMode
 {
 	LIMIT_MODE_ROUND = 0,
@@ -64,6 +80,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 {
 	CreateNative("Spectate_GetClientSpectators", Native_GetClientSpectators);
 	RegPluginLibrary("Spectate");
+	g_iEngineVersion = GetEngineVersion();
 	g_bLate = late;
 	return APLRes_Success;
 }
@@ -160,17 +177,20 @@ public void OnClientDisconnect(int client)
 
 public void OnClientSettingsChanged(int client)
 {
-	static char sSpecMode[8];
-	GetClientInfo(client, "cl_spec_mode", sSpecMode, sizeof(sSpecMode));
-
-	Obs_Mode iObserverMode = view_as<Obs_Mode>(StringToInt(sSpecMode));
-
-	// Skip broken OBS_MODE_POI
-	if (iObserverMode == OBS_MODE_POI)
+	if (g_iEngineVersion != Engine_CSGO)
 	{
-		ClientCommand(client, "cl_spec_mode %d", OBS_MODE_ROAMING);
-		if(IsClientInGame(client) && !IsPlayerAlive(client))
-			SetEntProp(client, Prop_Send, "m_iObserverMode", OBS_MODE_ROAMING);
+		static char sSpecMode[8];
+		GetClientInfo(client, "cl_spec_mode", sSpecMode, sizeof(sSpecMode));
+
+		Obs_Mode iObserverMode = view_as<Obs_Mode>(StringToInt(sSpecMode));
+
+		// Skip broken OBS_MODE_POI
+		if (iObserverMode == OBS_MODE_POI)
+		{
+			ClientCommand(client, "cl_spec_mode %d", OBS_MODE_ROAMING);
+			if(IsClientInGame(client) && !IsPlayerAlive(client))
+				SetEntProp(client, Prop_Send, "m_iObserverMode", OBS_MODE_ROAMING);
+		}
 	}
 }
 
@@ -306,12 +326,25 @@ public Action Command_Spectate(int client, int argc)
 
 	SetEntPropEnt(client, Prop_Send, "m_hObserverTarget", iTarget);
 
-	Obs_Mode iObserverMode = view_as<Obs_Mode>(GetEntProp(client, Prop_Send, "m_iObserverMode"));
-	// If the client is currently in free roaming then switch them to first person view
-	if (iObserverMode == OBS_MODE_ROAMING)
+	if (g_iEngineVersion != Engine_CSGO)
 	{
-		SetEntProp(client, Prop_Send, "m_iObserverMode", OBS_MODE_IN_EYE);
-		ClientCommand(client, "cl_spec_mode %d", OBS_MODE_ROAMING);
+		Obs_Mode iObserverMode = view_as<Obs_Mode>(GetEntProp(client, Prop_Send, "m_iObserverMode"));
+		// If the client is currently in free roaming then switch them to first person view
+		if (iObserverMode == OBS_MODE_ROAMING)
+		{
+			SetEntProp(client, Prop_Send, "m_iObserverMode", OBS_MODE_IN_EYE);
+			ClientCommand(client, "cl_spec_mode %d", OBS_MODE_ROAMING);
+		}
+	}
+	else
+	{
+		Obs_Mode_CSGO iObserverMode = view_as<Obs_Mode_CSGO>(GetEntProp(client, Prop_Send, "m_iObserverMode"));
+		// If the client is currently in free roaming then switch them to first person view
+		if (iObserverMode == OBS_MODE_CSGO_ROAMING)
+		{
+			SetEntProp(client, Prop_Send, "m_iObserverMode", OBS_MODE_CSGO_IN_EYE);
+			ClientCommand(client, "cl_spec_mode %d", OBS_MODE_CSGO_ROAMING);
+		}
 	}
 
 	if (g_cSpecLimit.IntValue >= 0)	
