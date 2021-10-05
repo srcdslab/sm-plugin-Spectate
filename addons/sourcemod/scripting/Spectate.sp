@@ -471,7 +471,7 @@ stock void PrintSpectateList(int client, int iTarget)
 {
 	if (g_iClientSpectatorCount[iTarget] <= 0)
 	{
-		PrintToChat(client, "[SM] Spectators: \x07FF4040none");
+		CPrintToChat(client, "[SM] Spectators: {red}none");
 		return;
 	}
 
@@ -485,7 +485,7 @@ stock void PrintSpectateList(int client, int iTarget)
 	}
 
 	if (sBuffer[0] != '\0')
-		PrintToChat(client, "[SM] Spectators: \x07D147FF%s", sBuffer);
+		CPrintToChat(client, "[SM] Spectators: {blue}%s", sBuffer);
 }
 
 stock int GetTeamAliveClientCount(int iTeam)
