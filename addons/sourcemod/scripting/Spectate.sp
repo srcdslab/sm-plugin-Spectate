@@ -36,8 +36,8 @@ public Plugin myinfo =
 {
 	name		= "Spectate",
 	description	= "Adds a command to spectate specific players and removes broken spectate mode.",
-	author		= "Obus, BotoX, maxime1907",
-	version		= "1.2",
+	author		= "Obus, BotoX, maxime1907, .Rushaway",
+	version		= "1.2.1",
 	url			= ""
 }
 
@@ -216,7 +216,7 @@ public Action Command_SpectateList(int client, int argc)
 			int iTarget;
 			if ((iTarget = FindTarget(client, sTarget, false, false)) <= 0)
 			{
-				ReplyToCommand(client, "[SM] Invalid target");
+				CReplyToCommand(client, "{green}[SM] {default}Invalid target.");
 				return Plugin_Handled;
 			}
 
@@ -236,13 +236,13 @@ public Action Command_Spectate(int client, int argc)
 {
 	if (!client)
 	{
-		PrintToServer("[SM] Cannot use command from server console.");
+		CPrintToServer("{green}[SM] {default}Cannot use command from server console.");
 		return Plugin_Handled;
 	}
 
 	if (!AdminHelper_IsClientAuthorized(client))
 	{
-		PrintToChat(client, "[SM] You do not have access to this command.");
+		CPrintToChat(client, "{green}[SM] {default}You do not have access to this command.");
 		return Plugin_Handled;
 	}
 
@@ -250,7 +250,7 @@ public Action Command_Spectate(int client, int argc)
 	{
 		if (g_iSpecAmount[client] >= g_cSpecLimit.IntValue)
 		{
-			PrintToChat(client, "[SM] You have used the maximum amount of spec authorized (%d/%d).", g_iSpecAmount[client], g_cSpecLimit.IntValue);
+			CPrintToChat(client, "{green}[SM] {default}You have used the maximum amount of spec authorized (%d/%d).", g_iSpecAmount[client], g_cSpecLimit.IntValue);
 			return Plugin_Handled;
 		}
 	}
@@ -269,7 +269,7 @@ public Action Command_Spectate(int client, int argc)
 
 		if (bOnlyZombie)
 		{
-			PrintToChat(client, "[SM] Can not switch to spectate as the last zombie!");
+			CPrintToChat(client, "{green}[SM] {default}Can not switch to spectate as the last zombie!");
 			return Plugin_Handled;
 		}
 	}
@@ -291,7 +291,7 @@ public Action Command_Spectate(int client, int argc)
 			if (g_cSpecLimit.IntValue >= 0)	
 			{
 				g_iSpecAmount[client]++;
-				PrintToChat(client, "[SM] You have used %d/%d allowed spec.", g_iSpecAmount[client], g_cSpecLimit.IntValue);
+				CPrintToChat(client, "{green}[SM] {default}You have used %d/%d allowed spec.", g_iSpecAmount[client], g_cSpecLimit.IntValue);
 			}
 		}
 
@@ -307,7 +307,7 @@ public Action Command_Spectate(int client, int argc)
 
 	if (!IsPlayerAlive(iTarget))
 	{
-		ReplyToCommand(client, "[SM] %t", "Target must be alive");
+		CReplyToCommand(client, "{green}[SM] {default}%t", "Target must be alive");
 		return Plugin_Handled;
 	}
 
@@ -350,10 +350,10 @@ public Action Command_Spectate(int client, int argc)
 	if (g_cSpecLimit.IntValue >= 0)	
 	{
 		g_iSpecAmount[client]++;
-		PrintToChat(client, "[SM] You have used %d/%d allowed spec.", g_iSpecAmount[client], g_cSpecLimit.IntValue);
+		CPrintToChat(client, "{green}[SM] {default}You have used %d/%d allowed spec.", g_iSpecAmount[client], g_cSpecLimit.IntValue);
 	}
 
-	PrintToChat(client, "\x01[SM] Spectating \x04%N\x01.", iTarget);
+	CPrintToChat(client, "{green}[SM] {default}Spectating {olive}%N{default}.", iTarget);
 
 	return Plugin_Handled;
 }
@@ -471,7 +471,7 @@ stock void PrintSpectateList(int client, int iTarget)
 {
 	if (g_iClientSpectatorCount[iTarget] <= 0)
 	{
-		CPrintToChat(client, "[SM] Spectators: {red}none");
+		CPrintToChat(client, "{green}[SM] {default}Spectators of {green}%N{default}: {olive}none{default}.", iTarget);
 		return;
 	}
 
@@ -480,12 +480,12 @@ stock void PrintSpectateList(int client, int iTarget)
 
 	for (int i = 0; i < g_iClientSpectatorCount[iTarget]; i++)
 	{
-		Format(sBufferTmp, sizeof(sBufferTmp), "%N%s", g_iClientSpectators[iTarget][i], i + 1 < g_iClientSpectatorCount[iTarget] ? ", " : "");
+		Format(sBufferTmp, sizeof(sBufferTmp), "%N%s", g_iClientSpectators[iTarget][i], i + 1 < g_iClientSpectatorCount[iTarget] ? "{default}, {olive}" : "");
 		StrCat(sBuffer, sizeof(sBuffer), sBufferTmp);
 	}
 
 	if (sBuffer[0] != '\0')
-		CPrintToChat(client, "[SM] Spectators: {blue}%s", sBuffer);
+		CPrintToChat(client, "{green}[SM] {default}Spectators of {green}%N{default}: {olive}%s", iTarget, sBuffer);
 }
 
 stock int GetTeamAliveClientCount(int iTeam)
