@@ -4,10 +4,10 @@
 #include <sdktools>
 #include <cstrike>
 #include <dhooks>
-#include <zombiereloaded>
 #include <multicolors>
-#include "loghelper.inc"
-#include "adminhelper.inc"
+#include <loghelper>
+#include <adminhelper>
+#tryinclude <zombiereloaded>
 
 #pragma newdecls required
 #pragma tabsize 0
@@ -255,6 +255,7 @@ public Action Command_Spectate(int client, int argc)
 		}
 	}
 
+#if defined _zr_included
 	if (IsPlayerAlive(client) && ZR_IsClientZombie(client))
 	{
 		bool bOnlyZombie = true;
@@ -273,12 +274,17 @@ public Action Command_Spectate(int client, int argc)
 			return Plugin_Handled;
 		}
 	}
+#endif
 
 	if (!argc)
 	{
 		if (GetClientTeam(client) != CS_TEAM_SPECTATOR)
 		{
+#if defined _zr_included
 			if ((IsPlayerAlive(client) && ZR_IsClientHuman(client)) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
+#else
+			if (IsPlayerAlive(client) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
+#endif
 				LogPlayerEvent(client, "triggered", "switch_to_spec");
 
 			if(g_cSuicidePlayer.IntValue == 1)
@@ -313,7 +319,11 @@ public Action Command_Spectate(int client, int argc)
 
 	if (GetClientTeam(client) != CS_TEAM_SPECTATOR)
 	{
+#if defined _zr_included
 		if ((IsPlayerAlive(client) && ZR_IsClientHuman(client)) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
+#else
+		if (IsPlayerAlive(client) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
+#endif
 			LogPlayerEvent(client, "triggered", "switch_to_spec");
 
 		if(g_cSuicidePlayer.IntValue == 1)
@@ -360,7 +370,11 @@ public Action Command_Spectate(int client, int argc)
 
 public Action Command_SpectateViaConsole(int client, char[] command, int args)
 {
+#if defined _zr_included
 	if ((IsPlayerAlive(client) && ZR_IsClientHuman(client)) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
+#else
+	if (IsPlayerAlive(client) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
+#endif
 		LogPlayerEvent(client, "triggered", "switch_to_spec");
 
 	return Plugin_Continue;
