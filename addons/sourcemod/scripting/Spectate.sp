@@ -12,6 +12,9 @@
 #pragma newdecls required
 #pragma tabsize 0
 
+#define CHAT_PREFIX "{green}[SM]{default}"
+
+ConVar g_cEnable;
 ConVar g_cSpecLimit;
 ConVar g_cSpecLimitMode;
 ConVar g_cSuicidePlayer;
@@ -37,7 +40,7 @@ public Plugin myinfo =
 	name		= "Spectate",
 	description	= "Adds a command to spectate specific players and removes broken spectate mode.",
 	author		= "Obus, BotoX, maxime1907, .Rushaway",
-	version		= "1.2.1",
+	version		= "1.3.1",
 	url			= ""
 }
 
@@ -89,6 +92,7 @@ public void OnPluginStart()
 {
 	LoadTranslations("common.phrases");
 
+	g_cEnable = CreateConVar("sm_spec_enable", "1", "Plugin should be enable ? [0 = Disable, 1 = Enable]");
 	g_cSpecLimitMode = CreateConVar("sm_speclimitmode", "0", "When does the limit is going to be reset [0 = Round end, 1 = Map end]");
 	g_cSuicidePlayer = CreateConVar("sm_specsuicideplayer", "0", "Suicide player when using spec command [0 = No, 1 = Yes]");
 	g_cSpecLimit = CreateConVar("sm_speclimit", "-1", "How many times players are allowed to use spec [-1 = Disabled]");
@@ -205,201 +209,234 @@ public void OnClientSettingsChanged(int client)
 
 public Action Command_SpectateList(int client, int argc)
 {
-	if (g_cSpecListAdminOnly.IntValue != -1 && CheckCommandAccess(client, "", ADMFLAG_GENERIC)
-		|| g_cSpecListAdminOnly.IntValue == -1)
+	if (GetConVarInt(g_cEnable) == 1)
 	{
-		if (argc == 1)
+		if (!client)
 		{
-			char sTarget[MAX_TARGET_LENGTH];
-			GetCmdArg(1, sTarget, sizeof(sTarget));
-
-			int iTarget;
-			if ((iTarget = FindTarget(client, sTarget, false, false)) <= 0)
-			{
-				CReplyToCommand(client, "{green}[SM] {default}Invalid target.");
-				return Plugin_Handled;
-			}
-
-			PrintSpectateList(client, iTarget);
-
+			PrintToServer("[SM] Cannot use command from server console.");
 			return Plugin_Handled;
 		}
+
+		if (g_cSpecListAdminOnly.IntValue != -1 && CheckCommandAccess(client, "", ADMFLAG_GENERIC)
+			|| g_cSpecListAdminOnly.IntValue == -1)
+		{
+			if (argc == 1)
+			{
+				char sTarget[MAX_TARGET_LENGTH];
+				GetCmdArg(1, sTarget, sizeof(sTarget));
+
+				int iTarget;
+				if ((iTarget = FindTarget(client, sTarget, false, false)) <= 0)
+				{
+					CReplyToCommand(client, "%s Invalid target.", CHAT_PREFIX);
+					return Plugin_Handled;
+				}
+				if (!IsPlayerAlive(iTarget))
+				{
+					CReplyToCommand(client, "%s %t", CHAT_PREFIX, "Target must be alive");
+					return Plugin_Handled;
+				}
+
+				PrintSpectateList(client, iTarget);
+
+				return Plugin_Handled;
+			}
+		}
+
+		if (g_cSpecListAdminOnly.IntValue == 0 || g_cSpecListAdminOnly.IntValue == -1
+			|| g_cSpecListAdminOnly.IntValue == 1 && CheckCommandAccess(client, "", ADMFLAG_GENERIC))
+			PrintSpectateList(client, client);
+		return Plugin_Handled;
 	}
 
-	if (g_cSpecListAdminOnly.IntValue == 0 || g_cSpecListAdminOnly.IntValue == -1
-		|| g_cSpecListAdminOnly.IntValue == 1 && CheckCommandAccess(client, "", ADMFLAG_GENERIC))
-		PrintSpectateList(client, client);
+	CReplyToCommand(client, "%s This feature is currently disabled by the server host.", CHAT_PREFIX);
 	return Plugin_Handled;
 }
 
 public Action Command_Spectate(int client, int argc)
 {
-	if (!client)
+	if (GetConVarInt(g_cEnable) == 1)
 	{
-		CPrintToServer("{green}[SM] {default}Cannot use command from server console.");
-		return Plugin_Handled;
-	}
-
-	if (!AdminHelper_IsClientAuthorized(client))
-	{
-		CPrintToChat(client, "{green}[SM] {default}You do not have access to this command.");
-		return Plugin_Handled;
-	}
-
-	if (g_cSpecLimit.IntValue >= 0)
-	{
-		if (g_iSpecAmount[client] >= g_cSpecLimit.IntValue)
+		if (!client)
 		{
-			CPrintToChat(client, "{green}[SM] {default}You have used the maximum amount of spec authorized (%d/%d).", g_iSpecAmount[client], g_cSpecLimit.IntValue);
+			PrintToServer("[SM] Cannot use command from server console.");
 			return Plugin_Handled;
 		}
-	}
 
-#if defined _zr_included
-	if (IsPlayerAlive(client) && ZR_IsClientZombie(client))
-	{
-		bool bOnlyZombie = true;
-		for (int i = 1; i <= MaxClients; i++)
+		if (!AdminHelper_IsClientAuthorized(client))
 		{
-			if (i != client && IsClientInGame(i) && IsPlayerAlive(i) && ZR_IsClientZombie(i))
+			CPrintToChat(client, "%s You do not have access to this command.", CHAT_PREFIX);
+			return Plugin_Handled;
+		}
+
+		if (g_cSpecLimit.IntValue >= 0)
+		{
+			if (g_iSpecAmount[client] >= g_cSpecLimit.IntValue)
 			{
-				bOnlyZombie = false;
-				break;
+				CPrintToChat(client, "%s You have used the maximum amount of spec authorized (%d/%d).", CHAT_PREFIX, g_iSpecAmount[client], g_cSpecLimit.IntValue);
+				return Plugin_Handled;
 			}
 		}
 
-		if (bOnlyZombie)
+	#if defined _zr_included
+		if (IsPlayerAlive(client) && ZR_IsClientZombie(client))
 		{
-			CPrintToChat(client, "{green}[SM] {default}Can not switch to spectate as the last zombie!");
+			bool bOnlyZombie = true;
+			for (int i = 1; i <= MaxClients; i++)
+			{
+				if (i != client && IsClientInGame(i) && IsPlayerAlive(i) && ZR_IsClientZombie(i))
+				{
+					bOnlyZombie = false;
+					break;
+				}
+			}
+
+			if (bOnlyZombie)
+			{
+				CPrintToChat(client, "%s Can not switch to spectate as the last zombie!", CHAT_PREFIX);
+				return Plugin_Handled;
+			}
+		}
+	#endif
+
+		if (!argc)
+		{
+			if (GetClientTeam(client) != CS_TEAM_SPECTATOR)
+			{
+	#if defined _zr_included
+				if ((IsPlayerAlive(client) && ZR_IsClientHuman(client)) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
+	#else
+				if (IsPlayerAlive(client) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
+	#endif
+					LogPlayerEvent(client, "triggered", "switch_to_spec");
+
+				if(g_cSuicidePlayer.IntValue == 1)
+				{
+			    	ForcePlayerSuicide(client);
+				}
+			
+				ChangeClientTeam(client, CS_TEAM_SPECTATOR);
+
+				if (g_cSpecLimit.IntValue >= 0)	
+				{
+					g_iSpecAmount[client]++;
+					CPrintToChat(client, "%s You have used %d/%d allowed spec.", CHAT_PREFIX, g_iSpecAmount[client], g_cSpecLimit.IntValue);
+				}
+			}
+
 			return Plugin_Handled;
 		}
-	}
-#endif
 
-	if (!argc)
-	{
+		char sTarget[MAX_TARGET_LENGTH];
+		GetCmdArg(1, sTarget, sizeof(sTarget));
+
+		int iTarget;
+		if ((iTarget = FindTarget(client, sTarget, false, false)) <= 0)
+			return Plugin_Handled;
+
+		if (!IsPlayerAlive(iTarget))
+		{
+			CReplyToCommand(client, "%s %t", CHAT_PREFIX, "Target must be alive");
+			return Plugin_Handled;
+		}
+
 		if (GetClientTeam(client) != CS_TEAM_SPECTATOR)
 		{
-#if defined _zr_included
+	#if defined _zr_included
 			if ((IsPlayerAlive(client) && ZR_IsClientHuman(client)) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
-#else
+	#else
 			if (IsPlayerAlive(client) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
-#endif
+	#endif
 				LogPlayerEvent(client, "triggered", "switch_to_spec");
 
 			if(g_cSuicidePlayer.IntValue == 1)
 			{
-			    ForcePlayerSuicide(client);
+				ForcePlayerSuicide(client);
 			}
-			
-			ChangeClientTeam(client, CS_TEAM_SPECTATOR);
-
-			if (g_cSpecLimit.IntValue >= 0)	
-			{
-				g_iSpecAmount[client]++;
-				CPrintToChat(client, "{green}[SM] {default}You have used %d/%d allowed spec.", g_iSpecAmount[client], g_cSpecLimit.IntValue);
-			}
-		}
-
-		return Plugin_Handled;
-	}
-
-	char sTarget[MAX_TARGET_LENGTH];
-	GetCmdArg(1, sTarget, sizeof(sTarget));
-
-	int iTarget;
-	if ((iTarget = FindTarget(client, sTarget, false, false)) <= 0)
-		return Plugin_Handled;
-
-	if (!IsPlayerAlive(iTarget))
-	{
-		CReplyToCommand(client, "{green}[SM] {default}%t", "Target must be alive");
-		return Plugin_Handled;
-	}
-
-	if (GetClientTeam(client) != CS_TEAM_SPECTATOR)
-	{
-#if defined _zr_included
-		if ((IsPlayerAlive(client) && ZR_IsClientHuman(client)) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
-#else
-		if (IsPlayerAlive(client) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
-#endif
-			LogPlayerEvent(client, "triggered", "switch_to_spec");
-
-		if(g_cSuicidePlayer.IntValue == 1)
-		{
-			ForcePlayerSuicide(client);
-		}
 		
-		ChangeClientTeam(client, CS_TEAM_SPECTATOR);
-	}
-
-	SetEntPropEnt(client, Prop_Send, "m_hObserverTarget", iTarget);
-
-	if (g_iEngineVersion != Engine_CSGO)
-	{
-		Obs_Mode iObserverMode = view_as<Obs_Mode>(GetEntProp(client, Prop_Send, "m_iObserverMode"));
-		// If the client is currently in free roaming then switch them to first person view
-		if (iObserverMode == OBS_MODE_ROAMING)
-		{
-			SetEntProp(client, Prop_Send, "m_iObserverMode", OBS_MODE_IN_EYE);
-			ClientCommand(client, "cl_spec_mode %d", OBS_MODE_ROAMING);
+			ChangeClientTeam(client, CS_TEAM_SPECTATOR);
 		}
-	}
-	else
-	{
-		Obs_Mode_CSGO iObserverMode = view_as<Obs_Mode_CSGO>(GetEntProp(client, Prop_Send, "m_iObserverMode"));
-		// If the client is currently in free roaming then switch them to first person view
-		if (iObserverMode == OBS_MODE_CSGO_ROAMING)
+
+		SetEntPropEnt(client, Prop_Send, "m_hObserverTarget", iTarget);
+
+		if (g_iEngineVersion != Engine_CSGO)
 		{
-			SetEntProp(client, Prop_Send, "m_iObserverMode", OBS_MODE_CSGO_IN_EYE);
-			ClientCommand(client, "cl_spec_mode %d", OBS_MODE_CSGO_ROAMING);
+			Obs_Mode iObserverMode = view_as<Obs_Mode>(GetEntProp(client, Prop_Send, "m_iObserverMode"));
+			// If the client is currently in free roaming then switch them to first person view
+			if (iObserverMode == OBS_MODE_ROAMING)
+			{
+				SetEntProp(client, Prop_Send, "m_iObserverMode", OBS_MODE_IN_EYE);
+				ClientCommand(client, "cl_spec_mode %d", OBS_MODE_ROAMING);
+			}
 		}
+		else
+		{
+			Obs_Mode_CSGO iObserverMode = view_as<Obs_Mode_CSGO>(GetEntProp(client, Prop_Send, "m_iObserverMode"));
+			// If the client is currently in free roaming then switch them to first person view
+			if (iObserverMode == OBS_MODE_CSGO_ROAMING)
+			{
+				SetEntProp(client, Prop_Send, "m_iObserverMode", OBS_MODE_CSGO_IN_EYE);
+				ClientCommand(client, "cl_spec_mode %d", OBS_MODE_CSGO_ROAMING);
+			}
+		}
+
+		if (g_cSpecLimit.IntValue >= 0)	
+		{
+			g_iSpecAmount[client]++;
+			CPrintToChat(client, "%s You have used %d/%d allowed spec.", CHAT_PREFIX, g_iSpecAmount[client], g_cSpecLimit.IntValue);
+		}
+
+		CPrintToChat(client, "%s Spectating {olive}%N{default}.", CHAT_PREFIX, iTarget);
+
+		return Plugin_Handled;
 	}
 
-	if (g_cSpecLimit.IntValue >= 0)	
-	{
-		g_iSpecAmount[client]++;
-		CPrintToChat(client, "{green}[SM] {default}You have used %d/%d allowed spec.", g_iSpecAmount[client], g_cSpecLimit.IntValue);
-	}
-
-	CPrintToChat(client, "{green}[SM] {default}Spectating {olive}%N{default}.", iTarget);
-
+	CReplyToCommand(client, "%s This feature is currently disabled by the server host.", CHAT_PREFIX);
 	return Plugin_Handled;
 }
 
 public Action Command_SpectateViaConsole(int client, char[] command, int args)
 {
-#if defined _zr_included
-	if ((IsPlayerAlive(client) && ZR_IsClientHuman(client)) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
-#else
-	if (IsPlayerAlive(client) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
-#endif
-		LogPlayerEvent(client, "triggered", "switch_to_spec");
+	if (GetConVarInt(g_cEnable) == 1)
+	{
+	#if defined _zr_included
+		if ((IsPlayerAlive(client) && ZR_IsClientHuman(client)) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
+	#else
+		if (IsPlayerAlive(client) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
+	#endif
+			LogPlayerEvent(client, "triggered", "switch_to_spec");
 
-	return Plugin_Continue;
+		return Plugin_Continue;
+	}
+	CReplyToCommand(client, "%s This feature is currently disabled by the server host.", CHAT_PREFIX);
+	return Plugin_Handled;
 }
 
 // Fix spec_goto crash exploit
 public Action Command_GoTo(int client, const char[] command, int argc)
 {
-	if(argc == 5)
+	if (GetConVarInt(g_cEnable) == 1)
 	{
-		for(int i = 1; i <= 3; i++)
+		if(argc == 5)
 		{
-			char sArg[64];
-			GetCmdArg(i, sArg, 64);
-			float fArg = StringToFloat(sArg);
-
-			if(FloatAbs(fArg) > 5000000000.0)
+			for(int i = 1; i <= 3; i++)
 			{
-				PrintToServer("%d -> %f > %f", i, FloatAbs(fArg), 5000000000.0);
-				return Plugin_Handled;
+				char sArg[64];
+				GetCmdArg(i, sArg, 64);
+				float fArg = StringToFloat(sArg);
+
+				if(FloatAbs(fArg) > 5000000000.0)
+				{
+					PrintToServer("%d -> %f > %f", i, FloatAbs(fArg), 5000000000.0);
+					return Plugin_Handled;
+				}
 			}
 		}
-	}
 
-	return Plugin_Continue;
+		return Plugin_Continue;
+	}
+	CReplyToCommand(client, "%s This feature is currently disabled by the server host.", CHAT_PREFIX);
+	return Plugin_Handled;
 }
 
 // ##     ##  #######   #######  ##    ##  ######  
@@ -485,7 +522,7 @@ stock void PrintSpectateList(int client, int iTarget)
 {
 	if (g_iClientSpectatorCount[iTarget] <= 0)
 	{
-		CPrintToChat(client, "{green}[SM] {default}Spectators of {green}%N{default}: {olive}none{default}.", iTarget);
+		CPrintToChat(client, "%s Spectators of {green}%N{default}: {olive}none{default}.", CHAT_PREFIX, iTarget);
 		return;
 	}
 
@@ -499,7 +536,7 @@ stock void PrintSpectateList(int client, int iTarget)
 	}
 
 	if (sBuffer[0] != '\0')
-		CPrintToChat(client, "{green}[SM] {default}Spectators of {green}%N{default}: {olive}%s", iTarget, sBuffer);
+		CPrintToChat(client, "%s Spectators of {green}%N{default}: {olive}%s", CHAT_PREFIX, iTarget, sBuffer);
 }
 
 stock int GetTeamAliveClientCount(int iTeam)
