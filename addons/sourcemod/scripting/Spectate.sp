@@ -451,6 +451,7 @@ public Action Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 {
 	if (g_cSpecLimitMode.IntValue == view_as<int>(LIMIT_MODE_ROUND))
 		ResetSpecLimit();
+	return Plugin_Continue;
 }
 
 public Action Event_PlayerSpawnPost(Event event, const char[] name, bool dontBroadcast)
@@ -460,6 +461,7 @@ public Action Event_PlayerSpawnPost(Event event, const char[] name, bool dontBro
 	{
 		RemoveLastClientSpectate(client);
 	}
+	return Plugin_Continue;
 }
 
 public MRESReturn IsValidObserverTarget(int pThis, Handle hReturn, Handle hParams)
