@@ -40,7 +40,7 @@ public Plugin myinfo =
 	name		= "Spectate",
 	description	= "Adds a command to spectate specific players and removes broken spectate mode.",
 	author		= "Obus, BotoX, maxime1907, .Rushaway",
-	version		= "1.3.1",
+	version		= "1.3.2",
 	url			= ""
 }
 
@@ -317,7 +317,7 @@ public Action Command_Spectate(int client, int argc)
 			
 				ChangeClientTeam(client, CS_TEAM_SPECTATOR);
 
-				if (g_cSpecLimit.IntValue >= 0)	
+				if (g_cSpecLimit.IntValue >= 0 && GetClientTeam(client) != CS_TEAM_SPECTATOR)	
 				{
 					g_iSpecAmount[client]++;
 					CPrintToChat(client, "%s You have used %d/%d allowed spec.", CHAT_PREFIX, g_iSpecAmount[client], g_cSpecLimit.IntValue);
@@ -380,7 +380,7 @@ public Action Command_Spectate(int client, int argc)
 			}
 		}
 
-		if (g_cSpecLimit.IntValue >= 0)	
+		if (g_cSpecLimit.IntValue >= 0 && GetClientTeam(client) != CS_TEAM_SPECTATOR)	
 		{
 			g_iSpecAmount[client]++;
 			CPrintToChat(client, "%s You have used %d/%d allowed spec.", CHAT_PREFIX, g_iSpecAmount[client], g_cSpecLimit.IntValue);
