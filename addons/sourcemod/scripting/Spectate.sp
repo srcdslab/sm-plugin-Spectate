@@ -40,8 +40,8 @@ public Plugin myinfo =
 	name		= "Spectate",
 	description	= "Adds a command to spectate specific players and removes broken spectate mode.",
 	author		= "Obus, BotoX, maxime1907, .Rushaway",
-	version		= "1.3.2",
-	url			= ""
+	version		= "1.3.3",
+	url		= ""
 }
 
 // Spectator Movement modes
@@ -255,7 +255,7 @@ public Action Command_SpectateList(int client, int argc)
 
 public Action Command_Spectate(int client, int argc)
 {
-	if (GetConVarInt(g_cEnable) == 1)
+	if (GetConVarInt(g_cEnable) == 1 || GetClientTeam(client) == CS_TEAM_SPECTATOR)
 	{
 		if (!client)
 		{
