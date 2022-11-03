@@ -40,7 +40,7 @@ public Plugin myinfo =
 	name		= "Spectate",
 	description	= "Adds a command to spectate specific players and removes broken spectate mode.",
 	author		= "Obus, BotoX, maxime1907, .Rushaway",
-	version		= "1.3.3",
+	version		= "1.3.4",
 	url		= ""
 }
 
@@ -217,7 +217,7 @@ public Action Command_SpectateList(int client, int argc)
 			return Plugin_Handled;
 		}
 
-		if (g_cSpecListAdminOnly.IntValue != -1 && CheckCommandAccess(client, "", ADMFLAG_GENERIC)
+		if (g_cSpecListAdminOnly.IntValue != -1 && CheckCommandAccess(client, "sm_admin", ADMFLAG_GENERIC, true)
 			|| g_cSpecListAdminOnly.IntValue == -1)
 		{
 			if (argc == 1)
@@ -244,7 +244,7 @@ public Action Command_SpectateList(int client, int argc)
 		}
 
 		if (g_cSpecListAdminOnly.IntValue == 0 || g_cSpecListAdminOnly.IntValue == -1
-			|| g_cSpecListAdminOnly.IntValue == 1 && CheckCommandAccess(client, "", ADMFLAG_GENERIC))
+			|| g_cSpecListAdminOnly.IntValue == 1 && CheckCommandAccess(client, "sm_admin", ADMFLAG_GENERIC, true))
 			PrintSpectateList(client, client);
 		return Plugin_Handled;
 	}
@@ -533,6 +533,12 @@ stock void PrintSpectateList(int client, int iTarget)
 
 	for (int i = 0; i < g_iClientSpectatorCount[iTarget]; i++)
 	{
+		if(g_iClientSpectators[iTarget][i] < 1 || g_iClientSpectators[iTarget][i] > MaxClients)
+			continue;
+		
+		if(!IsClientInGame(g_iClientSpectators[iTarget][i]))
+			continue;
+			
 		Format(sBufferTmp, sizeof(sBufferTmp), "%N%s", g_iClientSpectators[iTarget][i], i + 1 < g_iClientSpectatorCount[iTarget] ? "{default}, {olive}" : "");
 		StrCat(sBuffer, sizeof(sBuffer), sBufferTmp);
 	}
