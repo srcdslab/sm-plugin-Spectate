@@ -41,7 +41,7 @@ public Plugin myinfo =
 	name		= "Spectate",
 	description	= "Adds a command to spectate specific players and removes broken spectate mode.",
 	author		= "Obus, BotoX, maxime1907, .Rushaway",
-	version		= "1.3.4",
+	version		= "1.3.5",
 	url		= ""
 }
 
@@ -238,7 +238,8 @@ public Action Command_SpectateList(int client, int argc)
 					return Plugin_Handled;
 				}
 
-				PrintSpectateList(client, iTarget);
+				if (IsValidClient(client))
+					PrintSpectateList(client, iTarget);
 
 				return Plugin_Handled;
 			}
@@ -246,11 +247,13 @@ public Action Command_SpectateList(int client, int argc)
 
 		if (g_cSpecListAdminOnly.IntValue == 0 || g_cSpecListAdminOnly.IntValue == -1
 			|| g_cSpecListAdminOnly.IntValue == 1 && CheckCommandAccess(client, "sm_admin", ADMFLAG_GENERIC, true))
-			PrintSpectateList(client, client);
+				if (IsValidClient(client))
+					PrintSpectateList(client, client);
+
 		return Plugin_Handled;
 	}
-
-	CReplyToCommand(client, "%s This feature is currently disabled by the server host.", CHAT_PREFIX);
+	else
+		CReplyToCommand(client, "%s This feature is currently disabled by the server host.", CHAT_PREFIX);
 	return Plugin_Handled;
 }
 
@@ -315,14 +318,14 @@ public Action Command_Spectate(int client, int argc)
 				{
 			    	ForcePlayerSuicide(client);
 				}
-			
-				ChangeClientTeam(client, CS_TEAM_SPECTATOR);
 
 				if (g_cSpecLimit.IntValue >= 0 && GetClientTeam(client) != CS_TEAM_SPECTATOR)	
 				{
 					g_iSpecAmount[client]++;
 					CPrintToChat(client, "%s You have used %d/%d allowed spec.", CHAT_PREFIX, g_iSpecAmount[client], g_cSpecLimit.IntValue);
 				}
+
+				ChangeClientTeam(client, CS_TEAM_SPECTATOR);
 			}
 
 			return Plugin_Handled;
@@ -539,7 +542,7 @@ stock void PrintSpectateList(int client, int iTarget)
 		
 		if(!IsClientInGame(g_iClientSpectators[iTarget][i]))
 			continue;
-			
+
 		Format(sBufferTmp, sizeof(sBufferTmp), "%N%s", g_iClientSpectators[iTarget][i], i + 1 < g_iClientSpectatorCount[iTarget] ? "{default}, {olive}" : "");
 		StrCat(sBuffer, sizeof(sBuffer), sBufferTmp);
 	}
@@ -572,6 +575,15 @@ stock void ResetSpecLimit()
 	{
 		g_iSpecAmount[client] = 0;
 	}
+}
+
+bool IsValidClient(int client, bool nobots = true)
+{
+	if (client <= 0 || client > MaxClients || !IsClientConnected(client) || (nobots && IsFakeClient(client)))
+	{
+		return false;
+	}
+	return IsClientInGame(client);
 }
 
 //  888b    888        d8888 88888888888 8888888 888     888 8888888888 .d8888b.
