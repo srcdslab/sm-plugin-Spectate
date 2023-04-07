@@ -41,7 +41,7 @@ public Plugin myinfo =
 	name		= "Spectate",
 	description	= "Adds a command to spectate specific players and removes broken spectate mode.",
 	author		= "Obus, BotoX, maxime1907, .Rushaway",
-	version		= "1.3.5",
+	version		= "1.3.6",
 	url		= ""
 }
 
@@ -533,7 +533,7 @@ stock void PrintSpectateList(int client, int iTarget)
 	}
 
 	char sBuffer[1024] = "";
-	char sBufferTmp[256] = "";
+	char sBufferTmp[255] = "";
 
 	for (int i = 0; i < g_iClientSpectatorCount[iTarget]; i++)
 	{
