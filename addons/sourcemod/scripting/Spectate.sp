@@ -8,7 +8,11 @@
 #include <loghelper>
 #include <adminhelper>
 #include <multicolors>
+
+#undef REQUIRE_PLUGIN
 #tryinclude <zombiereloaded>
+#tryinclude <EntWatch>
+#define REQUIRE_PLUGIN
 
 #pragma newdecls required
 #pragma tabsize 0
@@ -20,7 +24,7 @@ ConVar g_cSpecLimit;
 ConVar g_cSpecLimitMode;
 ConVar g_cSuicidePlayer;
 ConVar g_cSpecListAdminOnly;
-
+ConVar g_cEntWatch;
 ConVar g_cAuthorizedFlags;
 
 int g_iSpecAmount[MAXPLAYERS + 1] = { 0, ... };
@@ -31,6 +35,8 @@ int g_iClientSpectatorCount[MAXPLAYERS + 1] = { 0, ... };
 Handle hIsValidObserverTarget;
 
 bool g_bCheckNullPtr = false;
+bool g_bZombieReloaded = false;
+bool g_bEntWatch = false;
 
 EngineVersion g_iEngineVersion;
 
@@ -41,7 +47,7 @@ public Plugin myinfo =
 	name		= "Spectate",
 	description	= "Adds a command to spectate specific players and removes broken spectate mode.",
 	author		= "Obus, BotoX, maxime1907, .Rushaway",
-	version		= "1.3.6",
+	version		= "1.3.7",
 	url		= ""
 }
 
@@ -98,7 +104,7 @@ public void OnPluginStart()
 	g_cSuicidePlayer = CreateConVar("sm_specsuicideplayer", "0", "Suicide player when using spec command [0 = No, 1 = Yes]");
 	g_cSpecLimit = CreateConVar("sm_speclimit", "-1", "How many times players are allowed to use spec [-1 = Disabled]");
 	g_cSpecListAdminOnly = CreateConVar("sm_speclist_adminonly", "1", "Should regular players be able to list their spectators [-1 = Yes and others, 0 = Yes, 1 = No]");
-
+	g_cEntWatch = CreateConVar("sm_spec_entwatch_block", "1", "Block player to go in spec if he has an item [0 = No, 1 = Yes]");
 	g_cAuthorizedFlags = CreateConVar("sm_spec_authorizedflags", "", "Who is able to use the spec command [\"\" = Everyone, \"b,o\" = Generic and Custom1]");
 	AdminHelper_SetupAuthorizedFlags(g_cAuthorizedFlags);
 
@@ -137,6 +143,28 @@ public void OnPluginStart()
 		for (int client = 1; client <= MaxClients; client++)
 			OnClientPutInServer(client);
 	}
+}
+
+public void OnAllPluginsLoaded()
+{
+	g_bZombieReloaded = LibraryExists("zombiereloaded");
+	g_bEntWatch = LibraryExists("EntWatch");
+}
+
+public void OnLibraryAdded(const char[] name)
+{
+	if (StrEqual(name, "zombiereloaded"))
+		g_bZombieReloaded = true;
+	if (StrEqual(name, "EntWatch"))
+		g_bEntWatch = true;
+}
+
+public void OnLibraryRemoved(const char[] name)
+{
+	if (StrEqual(name, "zombiereloaded"))
+		g_bZombieReloaded = false;
+	if (StrEqual(name, "EntWatch"))
+		g_bEntWatch = false;
 }
 
 public void OnPluginEnd()
@@ -283,7 +311,7 @@ public Action Command_Spectate(int client, int argc)
 		}
 
 	#if defined _zr_included
-		if (IsPlayerAlive(client) && ZR_IsClientZombie(client))
+		if (g_bZombieReloaded && IsPlayerAlive(client) && ZR_IsClientZombie(client))
 		{
 			bool bOnlyZombie = true;
 			for (int i = 1; i <= MaxClients; i++)
@@ -303,12 +331,20 @@ public Action Command_Spectate(int client, int argc)
 		}
 	#endif
 
+	#if defined _EntWatch_include
+		if (g_bEntWatch && g_cEntWatch.BoolValue && IsPlayerAlive(client) && EntWatch_HasSpecialItem(client))
+		{
+			CPrintToChat(client, "%s Can not switch to spectate if you own an item!", CHAT_PREFIX);
+			return Plugin_Handled;
+		}
+	#endif
+
 		if (!argc)
 		{
 			if (GetClientTeam(client) != CS_TEAM_SPECTATOR)
 			{
 	#if defined _zr_included
-				if ((IsPlayerAlive(client) && ZR_IsClientHuman(client)) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
+				if (g_bZombieReloaded && (IsPlayerAlive(client) && ZR_IsClientHuman(client)) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
 	#else
 				if (IsPlayerAlive(client) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
 	#endif
@@ -347,7 +383,7 @@ public Action Command_Spectate(int client, int argc)
 		if (GetClientTeam(client) != CS_TEAM_SPECTATOR)
 		{
 	#if defined _zr_included
-			if ((IsPlayerAlive(client) && ZR_IsClientHuman(client)) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
+			if ((g_bZombieReloaded && IsPlayerAlive(client) && ZR_IsClientHuman(client)) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
 	#else
 			if (IsPlayerAlive(client) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
 	#endif
@@ -404,7 +440,7 @@ public Action Command_SpectateViaConsole(int client, char[] command, int args)
 	if (GetConVarInt(g_cEnable) == 1)
 	{
 	#if defined _zr_included
-		if ((IsPlayerAlive(client) && ZR_IsClientHuman(client)) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
+		if ((g_bZombieReloaded && IsPlayerAlive(client) && ZR_IsClientHuman(client)) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
 	#else
 		if (IsPlayerAlive(client) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
 	#endif
