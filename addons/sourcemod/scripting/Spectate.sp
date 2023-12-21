@@ -107,7 +107,7 @@ public void OnPluginStart()
 	g_cEnable = CreateConVar("sm_spec_enable", "1", "Plugin should be enable ? [0 = Disable, 1 = Enable]");
 	g_cSpecLimitMode = CreateConVar("sm_speclimitmode", "0", "When does the limit is going to be reset [0 = Round end, 1 = Map end]");
 	g_cSuicidePlayer = CreateConVar("sm_specsuicideplayer", "0", "Suicide player when using spec command [0 = No, 1 = Yes]");
-	g_cSpecLimit = CreateConVar("sm_speclimit", "-1", "How many times players are allowed to use spec [-1|0 = Disabled]");
+	g_cSpecLimit = CreateConVar("sm_speclimit", "-1", "How many times players are allowed to use spec [-1 = Disabled]");
 	g_cSpecListAdminOnly = CreateConVar("sm_speclist_adminonly", "1", "Should regular players be able to list their spectators [-1 = Yes and others, 0 = Yes, 1 = No]");
 	g_cEntWatch = CreateConVar("sm_spec_entwatch_block", "1", "Block player to go in spec if he has an item [0 = No, 1 = Yes]");
 	g_cAuthorizedFlags = CreateConVar("sm_spec_authorizedflags", "", "Who is able to use the spec command [\"\" = Everyone, \"b,o\" = Generic and Custom1]");
@@ -250,12 +250,6 @@ public Action Command_SpectateList(int client, int argc)
 		return Plugin_Handled;
 	}
 
-	if (!client)
-	{
-		PrintToServer("[SM] Cannot use command from server console.");
-		return Plugin_Handled;
-	}
-
 	if (g_cSpecListAdminOnly.IntValue != -1 && CheckCommandAccess(client, "sm_admin", ADMFLAG_GENERIC, true)
 		|| g_cSpecListAdminOnly.IntValue == -1)
 	{
@@ -323,7 +317,7 @@ public Action Command_Spectate(int client, int argc)
 	#if defined _EntWatch_include
 		if (g_bEntWatch && g_cEntWatch.BoolValue && IsPlayerAlive(client) && EntWatch_HasSpecialItem(client))
 		{
-			CPrintToChat(client, "%s Can not switch to spectate if you own an item!", CHAT_PREFIX);
+			CPrintToChat(client, "%s Cannot switch to spectate if you own an item!", CHAT_PREFIX);
 			return Plugin_Handled;
 		}
 	#endif
