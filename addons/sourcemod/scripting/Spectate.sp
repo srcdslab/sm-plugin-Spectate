@@ -35,8 +35,6 @@ int g_iClientSpectatorCount[MAXPLAYERS + 1] = { 0, ... };
 
 Handle hIsValidObserverTarget = INVALID_HANDLE;
 Handle hPlayerCommitSuicideForward = INVALID_HANDLE;
-Handle hPlayerMovedToSpecForward = INVALID_HANDLE;
-Handle hPlayerSwitchedBackForward = INVALID_HANDLE;
 
 bool g_bCheckNullPtr = false;
 bool g_bZombieReloaded = false;
@@ -144,8 +142,6 @@ public void OnPluginStart()
 
 	// Forwards
 	hPlayerCommitSuicideForward = CreateGlobalForward("Spectate_OnCommitSuicide", ET_Ignore, Param_Cell);
-	hPlayerMovedToSpecForward = CreateGlobalForward("Spectate_OnClientMovedToSpec", ET_Ignore, Param_Cell);
-	hPlayerSwitchedBackForward = CreateGlobalForward("Spectate_OnClientSwitchedBack", ET_Ignore, Param_Cell);
 
 	for (int i = 0; i < MAXPLAYERS+1; i++)
 		for (int y = 0; y < MAXPLAYERS+1; y++)
@@ -188,8 +184,6 @@ public void OnPluginEnd()
 	}
 	CloseHandle(hIsValidObserverTarget);
 	CloseHandle(hPlayerCommitSuicideForward);
-	CloseHandle(hPlayerMovedToSpecForward);
-	CloseHandle(hPlayerSwitchedBackForward);
 }
 
 public void OnMapStart()
@@ -403,7 +397,6 @@ public Action Command_Spectate(int client, int argc)
 	}
 
 	ChangeClientTeam(client, CS_TEAM_SPECTATOR);
-	Forward_OnClientMovedToSpec(client);
 
 	if (IsValidTarget)
 	{
@@ -451,7 +444,6 @@ public Action Timer_SwitchBackToTeam(Handle timer, int client)
 	if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
 	{
 		ChangeClientTeam(client, CS_TEAM_T);
-		Forward_OnClientSwitchedBack(client);
 		CPrintToChat(client, "%s Your allowed spec time has expired. (%0.1fs)", CHAT_PREFIX, g_cMaxTimeInSpec.FloatValue);
 		CPrintToChat(client, "%s We have switched you back to playing with active players.", CHAT_PREFIX);
 	}
@@ -687,20 +679,6 @@ public int Native_GetClientSpectators(Handle plugin, int numParams)
 stock void Forward_OnCommitSuicide(int client)
 {
 	Call_StartForward(hPlayerCommitSuicideForward);
-	Call_PushCell(client);
-	Call_Finish();
-}
-
-stock void Forward_OnClientMovedToSpec(int client)
-{
-	Call_StartForward(hPlayerMovedToSpecForward);
-	Call_PushCell(client);
-	Call_Finish();
-}
-
-stock void Forward_OnClientSwitchedBack(int client)
-{
-	Call_StartForward(hPlayerSwitchedBackForward);
 	Call_PushCell(client);
 	Call_Finish();
 }
