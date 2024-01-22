@@ -14,16 +14,6 @@
 forward void Spectate_OnCommitSuicide(int client);
 
 /**
- * Called right after a client was moving to spec
- */
-forward void Spectate_OnClientMovedToSpec(int client);
-
-/**
- * Called right after a client was switched back to a team
- */
-forward void Spectate_OnClientSwitchedBack(int client);
-
-/**
  * Return a list of client's spectator
  *
  * @param client     Any valid client index.
