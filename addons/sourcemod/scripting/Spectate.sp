@@ -52,7 +52,7 @@ public Plugin myinfo =
 	name		= "Spectate",
 	description	= "Adds a command to spectate specific players and removes broken spectate mode.",
 	author		= "Obus, BotoX, maxime1907, .Rushaway",
-	version		= "1.3.8",
+	version		= "1.3.9",
 	url		= ""
 }
 
@@ -244,12 +244,6 @@ public void OnClientSettingsChanged(int client)
 
 public Action Command_SpectateList(int client, int argc)
 {
-	if (!g_cEnable.BoolValue)
-	{
-		CReplyToCommand(client, "%s This feature is currently disabled by the server host.", CHAT_PREFIX);
-		return Plugin_Handled;
-	}
-
 	if (g_cSpecListAdminOnly.IntValue != -1 && CheckCommandAccess(client, "sm_admin", ADMFLAG_GENERIC, true)
 		|| g_cSpecListAdminOnly.IntValue == -1)
 	{
@@ -286,12 +280,6 @@ public Action Command_SpectateList(int client, int argc)
 
 public Action Command_Spectate(int client, int argc)
 {
-	if (!g_cEnable.BoolValue)
-	{
-		CReplyToCommand(client, "%s This feature is currently disabled by the server host.", CHAT_PREFIX);
-		return Plugin_Handled;
-	}
-
 	if (!client)
 	{
 		PrintToServer("[SM] Cannot use command from server console.");
@@ -391,7 +379,14 @@ public Action Command_Spectate(int client, int argc)
 	#endif
 	}
 
-	ChangeClientTeam(client, CS_TEAM_SPECTATOR);
+	if (!g_cEnable.BoolValue && IsNotSpectator)
+	{
+		CReplyToCommand(client, "%s This feature is currently disabled by the server host.", CHAT_PREFIX);
+		return Plugin_Handled;
+	}
+
+	if (IsNotSpectator)
+		ChangeClientTeam(client, CS_TEAM_SPECTATOR);
 
 	if (IsValidTarget)
 	{
