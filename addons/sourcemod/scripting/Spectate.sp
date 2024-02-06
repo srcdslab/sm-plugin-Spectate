@@ -39,10 +39,6 @@ bool g_bCheckNullPtr = false;
 bool g_bZombieReloaded = false;
 bool g_bEntWatch = false;
 
-#if defined _zr_included
-bool g_bMotherInfect = false;
-#endif
-
 EngineVersion g_iEngineVersion;
 
 bool g_bLate = false;
@@ -352,41 +348,27 @@ public Action Command_Spectate(int client, int argc)
 		IsValidTarget = true;
 	}
 
-#if defined _zr_included
-	if (g_bZombieReloaded && IsPlayerAlive(client) && ZR_IsClientHuman(client) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
-#else
 	if (IsPlayerAlive(client) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
-#endif
-	LogPlayerEvent(client, "triggered", "switch_to_spec");
-
-	if (g_cSuicidePlayer.BoolValue)
-	{
-		ForcePlayerSuicide(client);
-	}
-
-	if (g_cSpecLimit.IntValue > 0 && IsNotSpectator)
-	{
-	#if defined _zr_included
-		if (g_bMotherInfect)
-		{
-			g_iSpecAmount[client]++;
-			CPrintToChat(client, "%s You have used %d/%d allowed spec.", CHAT_PREFIX, g_iSpecAmount[client], g_cSpecLimit.IntValue);
-		}
-	#else
-		g_iSpecAmount[client]++;
-		CPrintToChat(client, "%s You have used %d/%d allowed spec.", CHAT_PREFIX, g_iSpecAmount[client], g_cSpecLimit.IntValue);
-
-	#endif
-	}
-
-	if (!g_cEnable.BoolValue && IsNotSpectator)
-	{
-		CReplyToCommand(client, "%s This feature is currently disabled by the server host.", CHAT_PREFIX);
-		return Plugin_Handled;
-	}
+		LogPlayerEvent(client, "triggered", "switch_to_spec");
 
 	if (IsNotSpectator)
-		ChangeClientTeam(client, CS_TEAM_SPECTATOR);
+	{
+		if (g_cSpecLimit.IntValue > 0)
+		{
+			if (g_cSuicidePlayer.BoolValue)
+				ForcePlayerSuicide(client);
+
+			g_iSpecAmount[client]++;
+			CPrintToChat(client, "%s You have used %d/%d allowed spec.", CHAT_PREFIX, g_iSpecAmount[client], g_cSpecLimit.IntValue);
+			ChangeClientTeam(client, CS_TEAM_SPECTATOR);
+		}
+
+		if (!g_cEnable.BoolValue)
+		{
+			CReplyToCommand(client, "%s This feature is currently disabled by the server host.", CHAT_PREFIX);
+			return Plugin_Handled;
+		}
+	}
 
 	if (IsValidTarget)
 	{
@@ -449,11 +431,7 @@ public Action Command_SpectateViaConsole(int client, char[] command, int args)
 		return Plugin_Handled;
 	}
 
-#if defined _zr_included
-	if ((g_bZombieReloaded && IsPlayerAlive(client) && ZR_IsClientHuman(client)) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
-#else
 	if (IsPlayerAlive(client) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
-#endif
 		LogPlayerEvent(client, "triggered", "switch_to_spec");
 
 	return Plugin_Handled;
@@ -499,10 +477,6 @@ public Action Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 {
 	if (g_cSpecLimitMode.IntValue == view_as<int>(LIMIT_MODE_ROUND))
 		ResetSpecLimit();
-
-	#if defined _zr_included
-	g_bMotherInfect = false;
-	#endif
 
 	return Plugin_Continue;
 }
@@ -599,16 +573,6 @@ stock void PrintSpectateList(int client, int iTarget)
 	if (sBuffer[0] != '\0')
 		CPrintToChat(client, "%s Spectators of {green}%N{default}: {olive}%s", CHAT_PREFIX, iTarget, sBuffer);
 }
-
-#if defined _zr_included
-public Action ZR_OnClientInfect(int &client, int &attacker, bool &motherInfect, bool &respawnOverride, bool &respawn)
-{
-	if(motherInfect)
-		g_bMotherInfect = true;
-
-	return Plugin_Continue;
-}
-#endif
 
 stock int GetTeamAliveClientCount(int iTeam)
 {
