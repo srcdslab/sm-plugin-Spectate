@@ -348,11 +348,17 @@ public Action Command_Spectate(int client, int argc)
 		IsValidTarget = true;
 	}
 
-	if (IsPlayerAlive(client) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
-		LogPlayerEvent(client, "triggered", "switch_to_spec");
-
 	if (IsNotSpectator)
 	{
+		if (!g_cEnable.BoolValue)
+		{
+			CReplyToCommand(client, "%s This feature is currently disabled by the server host.", CHAT_PREFIX);
+			return Plugin_Handled;
+		}
+
+		if (IsPlayerAlive(client) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
+			LogPlayerEvent(client, "triggered", "switch_to_spec");
+
 		if (g_cSpecLimit.IntValue > 0)
 		{
 			if (g_cSuicidePlayer.BoolValue)
@@ -361,12 +367,6 @@ public Action Command_Spectate(int client, int argc)
 			g_iSpecAmount[client]++;
 			CPrintToChat(client, "%s You have used %d/%d allowed spec.", CHAT_PREFIX, g_iSpecAmount[client], g_cSpecLimit.IntValue);
 			ChangeClientTeam(client, CS_TEAM_SPECTATOR);
-		}
-
-		if (!g_cEnable.BoolValue)
-		{
-			CReplyToCommand(client, "%s This feature is currently disabled by the server host.", CHAT_PREFIX);
-			return Plugin_Handled;
 		}
 	}
 
