@@ -48,7 +48,7 @@ public Plugin myinfo =
 	name		= "Spectate",
 	description	= "Adds a command to spectate specific players and removes broken spectate mode.",
 	author		= "Obus, BotoX, maxime1907, .Rushaway",
-	version		= "1.3.9",
+	version		= "1.3.10",
 	url		= ""
 }
 
@@ -359,16 +359,17 @@ public Action Command_Spectate(int client, int argc)
 		if (IsPlayerAlive(client) && GetTeamClientCount(CS_TEAM_T) > 0 && GetTeamAliveClientCount(CS_TEAM_T) > 0)
 			LogPlayerEvent(client, "triggered", "switch_to_spec");
 
+		if (g_cSuicidePlayer.BoolValue)
+			ForcePlayerSuicide(client);
+
 		if (g_cSpecLimit.IntValue > 0)
 		{
-			if (g_cSuicidePlayer.BoolValue)
-				ForcePlayerSuicide(client);
-
 			g_iSpecAmount[client]++;
 			CPrintToChat(client, "%s You have used %d/%d allowed spec.", CHAT_PREFIX, g_iSpecAmount[client], g_cSpecLimit.IntValue);
-			ChangeClientTeam(client, CS_TEAM_SPECTATOR);
 		}
 	}
+
+	ChangeClientTeam(client, CS_TEAM_SPECTATOR);
 
 	if (IsValidTarget)
 	{
