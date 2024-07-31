@@ -44,15 +44,4 @@
 			}
 		}
 	}
-	"csgo"
-	{
-		"Offsets"
-		{
-			"IsValidObserverTarget"
-			{
-				"windows"	"432"
-				"linux"		"433"
-			}
-		}
-	}
 }
