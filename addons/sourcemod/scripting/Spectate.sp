@@ -46,7 +46,7 @@ public Plugin myinfo =
 	name		= "Spectate",
 	description	= "Adds a command to spectate specific players and removes broken spectate mode.",
 	author		= "Obus, BotoX, maxime1907, .Rushaway",
-	version		= "1.3.11",
+	version		= "1.3.12",
 	url		= ""
 }
 
@@ -140,7 +140,7 @@ public void OnLibraryAdded(const char[] name)
 {
 	if (StrEqual(name, "zombiereloaded"))
 		g_bZombieReloaded = true;
-	if (StrEqual(name, "EntWatch"))
+	else if (StrEqual(name, "EntWatch"))
 		g_bEntWatch = true;
 }
 
@@ -148,7 +148,7 @@ public void OnLibraryRemoved(const char[] name)
 {
 	if (StrEqual(name, "zombiereloaded"))
 		g_bZombieReloaded = false;
-	if (StrEqual(name, "EntWatch"))
+	else if (StrEqual(name, "EntWatch"))
 		g_bEntWatch = false;
 }
 
