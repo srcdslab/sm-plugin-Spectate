@@ -24,7 +24,6 @@ ConVar g_cSpecLimit;
 ConVar g_cSpecLimitMode;
 ConVar g_cSuicidePlayer;
 ConVar g_cSpecListAdminOnly;
-ConVar g_cEntWatch;
 ConVar g_cAuthorizedFlags;
 ConVar g_cMaxTimeInSpec;
 
@@ -36,17 +35,23 @@ int g_iClientSpectatorCount[MAXPLAYERS + 1] = { 0, ... };
 Handle hIsValidObserverTarget;
 
 bool g_bCheckNullPtr = false;
-bool g_bZombieReloaded = false;
-bool g_bEntWatch = false;
-
 bool g_bLate = false;
+
+#if defined _EntWatch_include
+ConVar g_cEntWatch;
+bool g_bEntWatch = false;
+#endif
+
+#if defined _zr_included
+bool g_bZombieReloaded = false;
+#endif
 
 public Plugin myinfo =
 {
 	name		= "Spectate",
 	description	= "Adds a command to spectate specific players and removes broken spectate mode.",
 	author		= "Obus, BotoX, maxime1907, .Rushaway",
-	version		= "1.3.12",
+	version		= "1.3.13",
 	url		= ""
 }
 
@@ -88,9 +93,13 @@ public void OnPluginStart()
 	g_cSuicidePlayer = CreateConVar("sm_specsuicideplayer", "0", "Suicide player when using spec command [0 = No, 1 = Yes]");
 	g_cSpecLimit = CreateConVar("sm_speclimit", "-1", "How many times players are allowed to use spec [-1 = Disabled]");
 	g_cSpecListAdminOnly = CreateConVar("sm_speclist_adminonly", "1", "Should regular players be able to list their spectators [-1 = Yes and others, 0 = Yes, 1 = No]");
-	g_cEntWatch = CreateConVar("sm_spec_entwatch_block", "1", "Block player to go in spec if he has an item [0 = No, 1 = Yes]");
 	g_cAuthorizedFlags = CreateConVar("sm_spec_authorizedflags", "", "Who is able to use the spec command [\"\" = Everyone, \"b,o\" = Generic and Custom1]");
 	g_cMaxTimeInSpec = CreateConVar("sm_spec_maxtime", "-1", "Max time allowed in spec (in seconds) [-1|0 = Disabled]");
+
+#if defined _EntWatch_include
+	g_cEntWatch = CreateConVar("sm_spec_entwatch_block", "1", "Block player to go in spec if he has an item [0 = No, 1 = Yes]");
+#endif
+
 	AdminHelper_SetupAuthorizedFlags(g_cAuthorizedFlags);
 
 	RegConsoleCmd("sm_speclist", Command_SpectateList, "List of players currently spectating someone");
@@ -132,24 +141,36 @@ public void OnPluginStart()
 
 public void OnAllPluginsLoaded()
 {
+#if defined _zr_included
 	g_bZombieReloaded = LibraryExists("zombiereloaded");
+#endif
+#if defined _EntWatch_include
 	g_bEntWatch = LibraryExists("EntWatch");
+#endif
 }
 
 public void OnLibraryAdded(const char[] name)
 {
+#if defined _zr_included
 	if (StrEqual(name, "zombiereloaded"))
 		g_bZombieReloaded = true;
+#endif
+#if defined _EntWatch_include
 	else if (StrEqual(name, "EntWatch"))
 		g_bEntWatch = true;
+#endif
 }
 
 public void OnLibraryRemoved(const char[] name)
 {
+#if defined _zr_included
 	if (StrEqual(name, "zombiereloaded"))
 		g_bZombieReloaded = false;
+#endif
+#if defined _EntWatch_include
 	else if (StrEqual(name, "EntWatch"))
 		g_bEntWatch = false;
+#endif
 }
 
 public void OnPluginEnd()
