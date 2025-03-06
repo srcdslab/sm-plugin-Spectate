@@ -15,14 +15,14 @@ Add a commands to spectate specific players and removes broken spectate mode.
 
 ## ConVars
 
-- `g_cEnable`: Enable or disable the plugin.
-- `g_cSpecLimit`: Limit the number of times players are allowed to use spec.
-- `g_cSpecLimitMode`: When does the limit is going to be reset.
-- `g_cSuicidePlayer`: Suicide player when using spec command.
-- `g_cSpecListAdminOnly`: Should regular players be able to list their spectators.
-- `g_cEntWatch`: Block player to go in spec if he has an item.
-- `g_cAuthorizedFlags`: Authorize users based on flags.
-- `g_cMaxTimeInSpec`: Limit the maximum time a player can spend in spectate.
+- `sm_spec_enable`: Enable or disable the plugin.
+- `sm_speclimit`: Limit the number of times players are allowed to use spec.
+- `sm_speclimitmode`: When does the limit is going to be reset.
+- `sm_specsuicideplayer`: Suicide player when using spec command.
+- `sm_speclist_adminonly`: Should regular players be able to list their spectators.
+- `sm_spec_entwatch_block`: Block player to go in spec if he has an item.
+- `sm_spec_authorizedflags`: Authorize users based on flags.
+- `sm_spec_maxtime`: Limit the maximum time a player can spend in spectate.
 
 ## Optional Dependencies
 
