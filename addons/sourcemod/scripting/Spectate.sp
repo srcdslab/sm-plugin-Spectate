@@ -51,7 +51,7 @@ public Plugin myinfo =
 	name		= "Spectate",
 	description	= "Adds a command to spectate specific players and removes broken spectate mode.",
 	author		= "Obus, BotoX, maxime1907, .Rushaway",
-	version		= "1.4.0",
+	version		= "1.4.1",
 	url		= ""
 }
 
@@ -391,15 +391,16 @@ public Action Command_Spectate(int client, int argc)
 	if (g_cMaxTimeInSpec.IntValue > 0 && IsNotSpectator)
 	{
 		CPrintToChat(client, "%s You will be switched back in team in %d seconds.", CHAT_PREFIX, g_cMaxTimeInSpec.IntValue);
-		CreateTimer(g_cMaxTimeInSpec.FloatValue, Timer_SwitchBackToTeam, client, TIMER_FLAG_NO_MAPCHANGE);
+		CreateTimer(g_cMaxTimeInSpec.FloatValue, Timer_SwitchBackToTeam, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 	}
 
 	return Plugin_Handled;
 }
 
-public Action Timer_SwitchBackToTeam(Handle timer, int client)
+public Action Timer_SwitchBackToTeam(Handle timer, int userid)
 {
-	if (!IsClientInGame(client))
+	int client = GetClientOfUserId(userid);
+	if (!client || !IsClientInGame(client))
 		return Plugin_Stop;
 
 	if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
