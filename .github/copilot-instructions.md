@@ -16,8 +16,8 @@ This repository contains the **Spectate** plugin for SourceMod, a scripting plat
 ### Language & Platform
 - **Language**: SourcePawn (.sp files)
 - **Platform**: SourceMod 1.11+ (currently using 1.11.0-git6934)
-- **Compiler**: SourcePawn compiler (spcomp) via SourceKnight build system
-- **Build System**: SourceKnight 0.2
+- **Compiler**: SourcePawn compiler (spcomp) via native GitHub Actions CI
+- **Build System**: GitHub Actions (`.github/workflows/ci.yml`)
 
 ### Dependencies
 This plugin requires several include files that are automatically fetched during build:
@@ -42,7 +42,6 @@ This plugin requires several include files that are automatically fetched during
 ├── .github/
 │   └── workflows/
 │       └── ci.yml               # Build and release pipeline
-├── sourceknight.yaml           # Build configuration
 └── README.md
 ```
 
@@ -76,22 +75,22 @@ All SourcePawn files must include these pragmas at the top:
 ## Build Process
 
 ### Building Locally
-The project uses SourceKnight for building. The build system:
-1. Downloads SourceMod and all dependencies
-2. Sets up include paths
+The project builds via native GitHub Actions using `rumblefrog/setup-sp` and `spcomp`. The workflow:
+1. Installs the SourcePawn compiler (SourceMod 1.12.x)
+2. Clones dependency repos (multicolors, loghelper, adminhelper, zombiereloaded, EntWatch) and copies their includes
 3. Compiles `Spectate.sp` to `Spectate.smx`
-4. Outputs to `/addons/sourcemod/plugins/`
+4. Outputs to `addons/sourcemod/plugins/`
 
 ### Build Configuration
-- Target: `Spectate` (defined in `sourceknight.yaml`)
+- Target: `Spectate` (compiled in `.github/workflows/ci.yml`)
 - Output: Plugin binary (`.smx` file)
-- Dependencies are automatically resolved and cached
+- Dependencies are cloned and their includes copied at build time
 
 ### CI/CD Pipeline
-- Builds on Ubuntu 24.04
-- Uses `maxime1907/action-sourceknight@v1`
-- Creates release packages with plugins and gamedata
-- Automatic tagging and releases for main branch
+- Builds on `ubuntu-latest` via `.github/workflows/ci.yml`
+- Uses `rumblefrog/setup-sp@v1.3.1` to install the SourcePawn compiler
+- Creates release packages with plugins
+- Automatic tagging (`latest`) and releases on pushes to `master`/`main`
 
 ## Plugin Architecture
 
@@ -207,7 +206,7 @@ for (int i = 0; i < MAXPLAYERS+1; i++)
 ## Troubleshooting
 
 ### Common Issues
-- **Build failures**: Check SourceKnight dependency versions
+- **Build failures**: Check dependency repo availability in the CI workflow
 - **Runtime errors**: Verify game data offsets for target game
 - **Memory leaks**: Ensure proper handle cleanup in `OnPluginEnd()`
 - **Integration issues**: Check library existence before calling optional natives
@@ -230,4 +229,3 @@ for (int i = 0; i < MAXPLAYERS+1; i++)
 - [SourceMod Scripting Documentation](https://sm.alliedmods.net/new-api/)
 - [SourcePawn Language Reference](https://sp.alliedmods.net/)
 - [DHooks Documentation](https://github.com/peace-maker/DHooks2)
-- [SourceKnight Build System](https://github.com/maxime1907/sourceknight)
