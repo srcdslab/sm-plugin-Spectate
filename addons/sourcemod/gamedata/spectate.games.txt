@@ -6,10 +6,10 @@
 		{
 			"IsValidObserverTarget"
 			{
-				"windows"	"387"
-				"windows64"	"387"
-				"linux"		"388"
-				"linux64"	"388"
+				"windows"	"388"
+				"windows64"	"388"
+				"linux"		"389"
+				"linux64"	"389"
 			}
 		}
 	}
