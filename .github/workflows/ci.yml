@@ -27,8 +27,8 @@ jobs:
           cp -R deps/adminhelper/addons/sourcemod/scripting/include/* addons/sourcemod/scripting/include/
           git clone --depth=1 https://github.com/srcdslab/sm-plugin-zombiereloaded.git deps/zombiereloaded
           cp -R deps/zombiereloaded/src/addons/sourcemod/scripting/include/* addons/sourcemod/scripting/include/
-          git clone --depth=1 https://github.com/srcdslab/sm-plugin-EntWatch.git deps/EntWatch
-          cp -R deps/EntWatch/addons/sourcemod/scripting/include/* addons/sourcemod/scripting/include/
+          git clone --depth=1 https://github.com/srcdslab/sm-plugin-entwatch-4.git deps/entwatch
+          cp -R deps/entwatch/addons/sourcemod/scripting/include/* addons/sourcemod/scripting/include/
 
       - name: Build sourcemod plugin
         working-directory: addons/sourcemod/scripting

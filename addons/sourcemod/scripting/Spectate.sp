@@ -11,7 +11,7 @@
 
 #undef REQUIRE_PLUGIN
 #tryinclude <zombiereloaded>
-#tryinclude <EntWatch>
+#tryinclude <entWatch_core>
 #define REQUIRE_PLUGIN
 
 #pragma newdecls required
@@ -37,7 +37,7 @@ Handle hIsValidObserverTarget;
 bool g_bCheckNullPtr = false;
 bool g_bLate = false;
 
-#if defined _EntWatch_include
+#if defined _entWatch_included
 ConVar g_cEntWatch;
 bool g_bEntWatch = false;
 #endif
@@ -51,7 +51,7 @@ public Plugin myinfo =
 	name		= "Spectate",
 	description	= "Adds a command to spectate specific players and removes broken spectate mode.",
 	author		= "Obus, BotoX, maxime1907, .Rushaway",
-	version		= "1.5.0",
+	version		= "1.6.0",
 	url		= ""
 }
 
@@ -96,7 +96,7 @@ public void OnPluginStart()
 	g_cAuthorizedFlags = CreateConVar("sm_spec_authorizedflags", "", "Who is able to use the spec command [\"\" = Everyone, \"b,o\" = Generic and Custom1]");
 	g_cMaxTimeInSpec = CreateConVar("sm_spec_maxtime", "-1", "Max time allowed in spec (in seconds) [-1|0 = Disabled]");
 
-#if defined _EntWatch_include
+#if defined _entWatch_included
 	g_cEntWatch = CreateConVar("sm_spec_entwatch_block", "1", "Block player to go in spec if he has an item [0 = No, 1 = Yes]");
 #endif
 
@@ -144,8 +144,8 @@ public void OnAllPluginsLoaded()
 #if defined _zr_included
 	g_bZombieReloaded = LibraryExists("zombiereloaded");
 #endif
-#if defined _EntWatch_include
-	g_bEntWatch = LibraryExists("EntWatch");
+#if defined _entWatch_included
+	g_bEntWatch = LibraryExists("entWatch-core");
 #endif
 }
 
@@ -155,8 +155,8 @@ public void OnLibraryAdded(const char[] name)
 	if (StrEqual(name, "zombiereloaded"))
 		g_bZombieReloaded = true;
 #endif
-#if defined _EntWatch_include
-	else if (StrEqual(name, "EntWatch"))
+#if defined _entWatch_included
+	if (StrEqual(name, "entWatch-core"))
 		g_bEntWatch = true;
 #endif
 }
@@ -167,8 +167,8 @@ public void OnLibraryRemoved(const char[] name)
 	if (StrEqual(name, "zombiereloaded"))
 		g_bZombieReloaded = false;
 #endif
-#if defined _EntWatch_include
-	else if (StrEqual(name, "EntWatch"))
+#if defined _entWatch_included
+	else if (StrEqual(name, "entWatch-core"))
 		g_bEntWatch = false;
 #endif
 }
@@ -299,8 +299,8 @@ public Action Command_Spectate(int client, int argc)
 			return Plugin_Handled;
 		}
 
-	#if defined _EntWatch_include
-		if (g_bEntWatch && g_cEntWatch.BoolValue && IsPlayerAlive(client) && EntWatch_HasSpecialItem(client))
+	#if defined _entWatch_included
+		if (g_bEntWatch && g_cEntWatch.BoolValue && IsPlayerAlive(client) && EW_ClientHasItem(client))
 		{
 			CPrintToChat(client, "%s Cannot switch to spectate if you own an item!", CHAT_PREFIX);
 			return Plugin_Handled;
