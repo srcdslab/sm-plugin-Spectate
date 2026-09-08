@@ -156,7 +156,7 @@ public void OnLibraryAdded(const char[] name)
 		g_bZombieReloaded = true;
 #endif
 #if defined _entWatch_included
-	else if (StrEqual(name, "entWatch-core"))
+	if (StrEqual(name, "entWatch-core"))
 		g_bEntWatch = true;
 #endif
 }
