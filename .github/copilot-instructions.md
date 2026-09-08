@@ -26,7 +26,7 @@ This plugin requires several include files that are automatically fetched during
 - `loghelper` - Logging utilities
 - `adminhelper` - Admin permission utilities
 - `zombiereloaded` - Optional ZombieReloaded integration
-- `EntWatch` - Optional EntWatch integration
+- `entWatch_core` - Optional entWatch 4 (entWatch-core) integration
 
 ## Project Structure
 
@@ -77,7 +77,7 @@ All SourcePawn files must include these pragmas at the top:
 ### Building Locally
 The project builds via native GitHub Actions using `rumblefrog/setup-sp` and `spcomp`. The workflow:
 1. Installs the SourcePawn compiler (SourceMod 1.12.x)
-2. Clones dependency repos (multicolors, loghelper, adminhelper, zombiereloaded, EntWatch) and copies their includes
+2. Clones dependency repos (multicolors, loghelper, adminhelper, zombiereloaded, entwatch-4) and copies their includes
 3. Compiles `Spectate.sp` to `Spectate.smx`
 4. Outputs to `addons/sourcemod/plugins/`
 
@@ -116,7 +116,7 @@ The project builds via native GitHub Actions using `rumblefrog/setup-sp` and `sp
 ```sourcepawn
 #undef REQUIRE_PLUGIN
 #tryinclude <zombiereloaded>
-#tryinclude <EntWatch>
+#tryinclude <entWatch_core>
 #define REQUIRE_PLUGIN
 ```
 
@@ -125,7 +125,7 @@ The project builds via native GitHub Actions using `rumblefrog/setup-sp` and `sp
 public void OnAllPluginsLoaded()
 {
     g_bZombieReloaded = LibraryExists("zombiereloaded");
-    g_bEntWatch = LibraryExists("EntWatch");
+    g_bEntWatch = LibraryExists("entWatch-core");
 }
 ```
 
