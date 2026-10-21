@@ -32,7 +32,7 @@ int g_iClientSpectate[MAXPLAYERS + 1] = { -1, ... };
 int g_iClientSpectators[MAXPLAYERS + 1][MAXPLAYERS + 1];
 int g_iClientSpectatorCount[MAXPLAYERS + 1] = { 0, ... };
 
-Handle hIsValidObserverTarget;
+DynamicHook hIsValidObserverTarget;
 
 bool g_bCheckNullPtr = false;
 bool g_bLate = false;
@@ -51,7 +51,7 @@ public Plugin myinfo =
 	name		= "Spectate",
 	description	= "Adds a command to spectate specific players and removes broken spectate mode.",
 	author		= "Obus, BotoX, maxime1907, .Rushaway",
-	version		= "1.6.0",
+	version		= "1.6.1",
 	url		= ""
 }
 
@@ -114,15 +114,15 @@ public void OnPluginStart()
 	HookEvent("round_end", Event_RoundEnd, EventHookMode_Post);
 
 	// Hook spectate
-    Handle hGameConf = LoadGameConfigFile("spectate.games");
+    GameData hGameConf = new GameData("spectate.games");
     
     if(!hGameConf)
         SetFailState("Failed to load spectate.games.txt");
 
-    int offset = GameConfGetOffset(hGameConf, "IsValidObserverTarget");
-    hIsValidObserverTarget = DHookCreate(offset, HookType_Entity, ReturnType_Bool, ThisPointer_CBaseEntity, IsValidObserverTarget);
-    DHookAddParam(hIsValidObserverTarget, HookParamType_CBaseEntity);
-    CloseHandle(hGameConf);
+    int offset = hGameConf.GetOffset("IsValidObserverTarget");
+    hIsValidObserverTarget = new DynamicHook(offset, HookType_Entity, ReturnType_Bool, ThisPointer_CBaseEntity);
+    hIsValidObserverTarget.AddParam(HookParamType_CBaseEntity);
+    delete hGameConf;
     
     g_bCheckNullPtr = (GetFeatureStatus(FeatureType_Native, "DHookIsNullParam") == FeatureStatus_Available);
 
@@ -179,7 +179,7 @@ public void OnPluginEnd()
 	{
 		RemoveLastClientSpectate(i);
 	}
-	CloseHandle(hIsValidObserverTarget);
+	delete hIsValidObserverTarget;
 }
 
 public void OnMapStart()
@@ -205,7 +205,7 @@ public void OnClientPutInServer(int client)
 		|| IsFakeClient(client) || IsClientSourceTV(client))
 		return;
 
-    DHookEntity(hIsValidObserverTarget, true, client);
+    hIsValidObserverTarget.HookEntity(Hook_Post, client, IsValidObserverTarget);
 }
 
 public void OnClientDisconnect(int client)
@@ -473,7 +473,7 @@ public Action Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 
 public Action Event_PlayerSpawnPost(Event event, const char[] name, bool dontBroadcast)
 {
-	int client = GetClientOfUserId(GetEventInt(event, "userid"));
+	int client = GetClientOfUserId(event.GetInt("userid"));
 	if (!IsFakeClient(client))
 	{
 		RemoveLastClientSpectate(client);
@@ -481,14 +481,14 @@ public Action Event_PlayerSpawnPost(Event event, const char[] name, bool dontBro
 	return Plugin_Continue;
 }
 
-public MRESReturn IsValidObserverTarget(int pThis, Handle hReturn, Handle hParams)
+public MRESReturn IsValidObserverTarget(int pThis, DHookReturn hReturn, DHookParam hParams)
 {
 	// As of DHooks 1.0.12 we must check for a null param.
-	if (g_bCheckNullPtr && DHookIsNullParam(hParams, 1))
+	if (g_bCheckNullPtr && hParams.IsNull(1))
 		return MRES_Ignored;
 
 	int client = pThis;
-	int target = DHookGetParam(hParams, 1);
+	int target = hParams.Get(1);
 	if (target <= 0 || target > MaxClients || !IsClientInGame(client) || !IsClientInGame(target) || !IsPlayerAlive(target) || IsPlayerAlive(client))
 	{
 		RemoveLastClientSpectate(client);
@@ -500,7 +500,7 @@ public MRESReturn IsValidObserverTarget(int pThis, Handle hReturn, Handle hParam
 		g_iClientSpectate[client] = target;
 		g_iClientSpectators[target][g_iClientSpectatorCount[target]] = client;
 		g_iClientSpectatorCount[target]++;
-		DHookSetReturn(hReturn, true);
+		hReturn.Value = true;
 		return MRES_Override;
 	}
 }
