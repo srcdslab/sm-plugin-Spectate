@@ -51,7 +51,7 @@ public Plugin myinfo =
 	name		= "Spectate",
 	description	= "Adds a command to spectate specific players and removes broken spectate mode.",
 	author		= "Obus, BotoX, maxime1907, .Rushaway",
-	version		= "1.6.1",
+	version		= "1.6.2",
 	url		= ""
 }
 
@@ -87,6 +87,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 public void OnPluginStart()
 {
 	LoadTranslations("common.phrases");
+	LoadTranslations("Spectate.phrases");
 
 	g_cEnable = CreateConVar("sm_spec_enable", "1", "Plugin should be enable ? [0 = Disable, 1 = Enable]");
 	g_cSpecLimitMode = CreateConVar("sm_speclimitmode", "0", "When does the limit is going to be reset [0 = Round end, 1 = Map end]");
@@ -252,7 +253,7 @@ public Action Command_SpectateList(int client, int argc)
 			int iTarget;
 			if ((iTarget = FindTarget(client, sTarget, false, false)) <= 0)
 			{
-				CReplyToCommand(client, "%s Invalid target.", CHAT_PREFIX);
+				CReplyToCommand(client, "%s %t", CHAT_PREFIX, "Invalid Target");
 				return Plugin_Handled;
 			}
 			if (!IsPlayerAlive(iTarget))
@@ -285,7 +286,7 @@ public Action Command_Spectate(int client, int argc)
 
 	if (!AdminHelper_IsClientAuthorized(client))
 	{
-		CPrintToChat(client, "%s You do not have access to this command.", CHAT_PREFIX);
+		CPrintToChat(client, "%s %t", CHAT_PREFIX, "No Command Access");
 		return Plugin_Handled;
 	}
 
@@ -295,14 +296,14 @@ public Action Command_Spectate(int client, int argc)
 	{
 		if (g_cSpecLimit.IntValue > 0 && g_iSpecAmount[client] >= g_cSpecLimit.IntValue)
 		{
-			CPrintToChat(client, "%s You have used the maximum amount of spec authorized (%d/%d).", CHAT_PREFIX, g_iSpecAmount[client], g_cSpecLimit.IntValue);
+			CPrintToChat(client, "%s %t", CHAT_PREFIX, "Spec Limit Reached", g_iSpecAmount[client], g_cSpecLimit.IntValue);
 			return Plugin_Handled;
 		}
 
 	#if defined _entWatch_included
 		if (g_bEntWatch && g_cEntWatch.BoolValue && IsPlayerAlive(client) && EW_ClientHasItem(client))
 		{
-			CPrintToChat(client, "%s Cannot switch to spectate if you own an item!", CHAT_PREFIX);
+			CPrintToChat(client, "%s %t", CHAT_PREFIX, "Spec Item Owner");
 			return Plugin_Handled;
 		}
 	#endif
@@ -322,7 +323,7 @@ public Action Command_Spectate(int client, int argc)
 
 			if (bOnlyZombie)
 			{
-				CPrintToChat(client, "%s Can not switch to spectate as the last zombie!", CHAT_PREFIX);
+				CPrintToChat(client, "%s %t", CHAT_PREFIX, "Spec Last Zombie");
 				return Plugin_Handled;
 			}
 		}
@@ -353,7 +354,7 @@ public Action Command_Spectate(int client, int argc)
 	{
 		if (!g_cEnable.BoolValue)
 		{
-			CReplyToCommand(client, "%s This feature is currently disabled by the server host.", CHAT_PREFIX);
+			CReplyToCommand(client, "%s %t", CHAT_PREFIX, "Spec Disabled");
 			return Plugin_Handled;
 		}
 
@@ -366,7 +367,7 @@ public Action Command_Spectate(int client, int argc)
 		if (g_cSpecLimit.IntValue > 0)
 		{
 			g_iSpecAmount[client]++;
-			CPrintToChat(client, "%s You have used %d/%d allowed spec.", CHAT_PREFIX, g_iSpecAmount[client], g_cSpecLimit.IntValue);
+			CPrintToChat(client, "%s %t", CHAT_PREFIX, "Spec Used", g_iSpecAmount[client], g_cSpecLimit.IntValue);
 		}
 	}
 
@@ -384,13 +385,13 @@ public Action Command_Spectate(int client, int argc)
 			ClientCommand(client, "cl_spec_mode %d", OBS_MODE_ROAMING);
 		}
 
-		CPrintToChat(client, "%s Spectating {olive}%N{default}.", CHAT_PREFIX, iTarget);
+		CPrintToChat(client, "%s %t", CHAT_PREFIX, "Spectating", iTarget);
 	}
 
 	// Create a timer for switch back user to valid team after 60 seconds based on g_cMaxTimeInSpec
 	if (g_cMaxTimeInSpec.IntValue > 0 && IsNotSpectator)
 	{
-		CPrintToChat(client, "%s You will be switched back in team in %d seconds.", CHAT_PREFIX, g_cMaxTimeInSpec.IntValue);
+		CPrintToChat(client, "%s %t", CHAT_PREFIX, "Spec Switch Back Timer", g_cMaxTimeInSpec.IntValue);
 		CreateTimer(g_cMaxTimeInSpec.FloatValue, Timer_SwitchBackToTeam, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 	}
 
@@ -406,8 +407,8 @@ public Action Timer_SwitchBackToTeam(Handle timer, int userid)
 	if (GetClientTeam(client) == CS_TEAM_SPECTATOR)
 	{
 		ChangeClientTeam(client, CS_TEAM_T);
-		CPrintToChat(client, "%s Your allowed spec time has expired. (%0.1fs)", CHAT_PREFIX, g_cMaxTimeInSpec.FloatValue);
-		CPrintToChat(client, "%s We have switched you back to playing with active players.", CHAT_PREFIX);
+		CPrintToChat(client, "%s %t", CHAT_PREFIX, "Spec Time Expired", g_cMaxTimeInSpec.FloatValue);
+		CPrintToChat(client, "%s %t", CHAT_PREFIX, "Spec Switched Back");
 	}
 
 	return Plugin_Continue;
@@ -417,7 +418,7 @@ public Action Command_SpectateViaConsole(int client, char[] command, int args)
 {
 	if (!g_cEnable.BoolValue)
 	{
-		CReplyToCommand(client, "%s This feature is currently disabled by the server host.", CHAT_PREFIX);
+		CReplyToCommand(client, "%s %t", CHAT_PREFIX, "Spec Disabled");
 		return Plugin_Handled;
 	}
 
@@ -432,7 +433,7 @@ public Action Command_GoTo(int client, const char[] command, int argc)
 {
 	if (!g_cEnable.BoolValue)
 	{
-		CReplyToCommand(client, "%s This feature is currently disabled by the server host.", CHAT_PREFIX);
+		CReplyToCommand(client, "%s %t", CHAT_PREFIX, "Spec Disabled");
 		return Plugin_Handled;
 	}
 
@@ -541,7 +542,7 @@ stock void PrintSpectateList(int client, int iTarget)
 {
 	if (g_iClientSpectatorCount[iTarget] <= 0)
 	{
-		CPrintToChat(client, "%s Spectators of {green}%N{default}: {olive}none{default}.", CHAT_PREFIX, iTarget);
+		CPrintToChat(client, "%s %t", CHAT_PREFIX, "Spectators None", iTarget);
 		return;
 	}
 
@@ -561,7 +562,7 @@ stock void PrintSpectateList(int client, int iTarget)
 	}
 
 	if (sBuffer[0] != '\0')
-		CPrintToChat(client, "%s Spectators of {green}%N{default}: {olive}%s", CHAT_PREFIX, iTarget, sBuffer);
+		CPrintToChat(client, "%s %t", CHAT_PREFIX, "Spectators List", iTarget, sBuffer);
 }
 
 stock int GetTeamAliveClientCount(int iTeam)

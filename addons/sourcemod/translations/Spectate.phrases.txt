@@ -1,0 +1,140 @@
+"Phrases"
+{
+	"Invalid Target"
+	{
+		"en"		"Invalid target."
+		"fr"		"Cible invalide."
+		"ru"		"Неверная цель."
+		"es"		"Objetivo no válido."
+		"de"		"Ungültiges Ziel."
+		"pt"		"Alvo inválido."
+		"chi"		"无效的目标。"
+	}
+	"No Command Access"
+	{
+		"en"		"You do not have access to this command."
+		"fr"		"Vous n'avez pas accès à cette commande."
+		"ru"		"У вас нет доступа к этой команде."
+		"es"		"No tienes acceso a este comando."
+		"de"		"Du hast keinen Zugriff auf diesen Befehl."
+		"pt"		"Você não tem acesso a este comando."
+		"chi"		"你无权使用此命令。"
+	}
+	"Spec Limit Reached"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"You have used the maximum number of allowed specs ({1}/{2})."
+		"fr"		"Vous avez atteint le nombre maximum de spec autorisés ({1}/{2})."
+		"ru"		"Вы использовали максимальное число переходов в наблюдатели ({1}/{2})."
+		"es"		"Has usado el número máximo de spec permitidos ({1}/{2})."
+		"de"		"Du hast die maximale Anzahl erlaubter Spec-Wechsel erreicht ({1}/{2})."
+		"pt"		"Você usou o número máximo de specs permitidos ({1}/{2})."
+		"chi"		"你已用完允许的观察次数（{1}/{2}）。"
+	}
+	"Spec Item Owner"
+	{
+		"en"		"Cannot switch to spectate if you own an item!"
+		"fr"		"Impossible de passer en spectateur si vous possédez un item !"
+		"ru"		"Нельзя перейти в наблюдатели, если у вас есть предмет!"
+		"es"		"¡No puedes pasar a espectador si tienes un ítem!"
+		"de"		"Du kannst nicht zu den Zuschauern wechseln, während du ein Item besitzt!"
+		"pt"		"Não é possível ir para espectador se você tiver um item!"
+		"chi"		"持有物品时无法切换到观察者！"
+	}
+	"Spec Last Zombie"
+	{
+		"en"		"Cannot switch to spectate as the last zombie!"
+		"fr"		"Impossible de passer en spectateur en étant le dernier zombie !"
+		"ru"		"Нельзя перейти в наблюдатели, будучи последним зомби!"
+		"es"		"¡No puedes pasar a espectador siendo el último zombi!"
+		"de"		"Als letzter Zombie kannst du nicht zu den Zuschauern wechseln!"
+		"pt"		"Não é possível ir para espectador sendo o último zumbi!"
+		"chi"		"作为最后一个僵尸，你无法切换到观察者！"
+	}
+	"Spec Disabled"
+	{
+		"en"		"This feature is currently disabled by the server host."
+		"fr"		"Cette fonctionnalité est actuellement désactivée par l'hébergeur du serveur."
+		"ru"		"Эта функция сейчас отключена владельцем сервера."
+		"es"		"Esta función está desactivada actualmente por el administrador del servidor."
+		"de"		"Diese Funktion ist derzeit vom Serverbetreiber deaktiviert."
+		"pt"		"Este recurso está desativado no momento pelo administrador do servidor."
+		"chi"		"此功能目前已被服务器管理员禁用。"
+	}
+	"Spec Used"
+	{
+		"#format"	"{1:d},{2:d}"
+		"en"		"You have used {1}/{2} allowed specs."
+		"fr"		"Vous avez utilisé {1}/{2} spec autorisés."
+		"ru"		"Вы использовали {1}/{2} разрешённых переходов в наблюдатели."
+		"es"		"Has usado {1}/{2} spec permitidos."
+		"de"		"Du hast {1}/{2} erlaubte Spec-Wechsel benutzt."
+		"pt"		"Você usou {1}/{2} specs permitidos."
+		"chi"		"你已使用 {1}/{2} 次允许的观察次数。"
+	}
+	"Spectating"
+	{
+		"#format"	"{1:N}"
+		"en"		"Spectating {olive}{1}{default}."
+		"fr"		"Vous regardez {olive}{1}{default}."
+		"ru"		"Вы наблюдаете за {olive}{1}{default}."
+		"es"		"Observando a {olive}{1}{default}."
+		"de"		"Du beobachtest {olive}{1}{default}."
+		"pt"		"Observando {olive}{1}{default}."
+		"chi"		"正在观察 {olive}{1}{default}。"
+	}
+	"Spec Switch Back Timer"
+	{
+		"#format"	"{1:d}"
+		"en"		"You will be switched back to a team in {1} seconds."
+		"fr"		"Vous serez remis dans une équipe dans {1} secondes."
+		"ru"		"Вы будете возвращены в команду через {1} сек."
+		"es"		"Volverás a un equipo en {1} segundos."
+		"de"		"Du wirst in {1} Sekunden wieder in ein Team verschoben."
+		"pt"		"Você voltará para um time em {1} segundos."
+		"chi"		"你将在 {1} 秒后被移回队伍。"
+	}
+	"Spec Time Expired"
+	{
+		"#format"	"{1:.1f}"
+		"en"		"Your allowed spec time has expired. ({1}s)"
+		"fr"		"Votre temps de spec autorisé est écoulé. ({1} s)"
+		"ru"		"Ваше разрешённое время в наблюдателях истекло. ({1} с)"
+		"es"		"Tu tiempo de spec permitido ha terminado. ({1} s)"
+		"de"		"Deine erlaubte Spec-Zeit ist abgelaufen. ({1} s)"
+		"pt"		"Seu tempo de spec permitido acabou. ({1}s)"
+		"chi"		"你的观察时间已到。（{1} 秒）"
+	}
+	"Spec Switched Back"
+	{
+		"en"		"We have switched you back to playing with active players."
+		"fr"		"Vous avez été remis en jeu avec les joueurs actifs."
+		"ru"		"Вы возвращены в игру к активным игрокам."
+		"es"		"Te hemos devuelto al juego con los jugadores activos."
+		"de"		"Du wurdest wieder zu den aktiven Spielern verschoben."
+		"pt"		"Você voltou a jogar com os jogadores ativos."
+		"chi"		"你已被移回，与活跃玩家一起游戏。"
+	}
+	"Spectators None"
+	{
+		"#format"	"{1:N}"
+		"en"		"Spectators of {green}{1}{default}: {olive}none{default}."
+		"fr"		"Spectateurs de {green}{1}{default} : {olive}aucun{default}."
+		"ru"		"Наблюдатели {green}{1}{default}: {olive}нет{default}."
+		"es"		"Espectadores de {green}{1}{default}: {olive}ninguno{default}."
+		"de"		"Zuschauer von {green}{1}{default}: {olive}keine{default}."
+		"pt"		"Espectadores de {green}{1}{default}: {olive}nenhum{default}."
+		"chi"		"{green}{1}{default} 的观察者：{olive}无{default}。"
+	}
+	"Spectators List"
+	{
+		"#format"	"{1:N},{2:s}"
+		"en"		"Spectators of {green}{1}{default}: {olive}{2}"
+		"fr"		"Spectateurs de {green}{1}{default} : {olive}{2}"
+		"ru"		"Наблюдатели {green}{1}{default}: {olive}{2}"
+		"es"		"Espectadores de {green}{1}{default}: {olive}{2}"
+		"de"		"Zuschauer von {green}{1}{default}: {olive}{2}"
+		"pt"		"Espectadores de {green}{1}{default}: {olive}{2}"
+		"chi"		"{green}{1}{default} 的观察者：{olive}{2}"
+	}
+}
