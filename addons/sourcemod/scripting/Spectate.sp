@@ -34,7 +34,6 @@ int g_iClientSpectatorCount[MAXPLAYERS + 1] = { 0, ... };
 
 DynamicHook hIsValidObserverTarget;
 
-bool g_bCheckNullPtr = false;
 bool g_bLate = false;
 
 #if defined _entWatch_included
@@ -51,7 +50,7 @@ public Plugin myinfo =
 	name		= "Spectate",
 	description	= "Adds a command to spectate specific players and removes broken spectate mode.",
 	author		= "Obus, BotoX, maxime1907, .Rushaway",
-	version		= "1.6.3",
+	version		= "1.6.4",
 	url		= ""
 }
 
@@ -124,8 +123,6 @@ public void OnPluginStart()
     hIsValidObserverTarget = new DynamicHook(offset, HookType_Entity, ReturnType_Bool, ThisPointer_CBaseEntity);
     hIsValidObserverTarget.AddParam(HookParamType_CBaseEntity);
     delete hGameConf;
-    
-    g_bCheckNullPtr = (GetFeatureStatus(FeatureType_Native, "DHookIsNullParam") == FeatureStatus_Available);
 
 	AutoExecConfig(true);
 
@@ -482,8 +479,8 @@ public Action Event_PlayerSpawnPost(Event event, const char[] name, bool dontBro
 
 public MRESReturn IsValidObserverTarget(int pThis, DHookReturn hReturn, DHookParam hParams)
 {
-	// As of DHooks 1.0.12 we must check for a null param.
-	if (g_bCheckNullPtr && hParams.IsNull(1))
+	// The target can be a null entity (e.g. on team change).
+	if (hParams.IsNull(1))
 		return MRES_Ignored;
 
 	int client = pThis;
