@@ -1,15 +1,5 @@
 "Phrases"
 {
-	"Invalid Target"
-	{
-		"en"		"Invalid target."
-		"fr"		"Cible invalide."
-		"ru"		"Неверная цель."
-		"es"		"Objetivo no válido."
-		"de"		"Ungültiges Ziel."
-		"pt"		"Alvo inválido."
-		"chi"		"无效的目标。"
-	}
 	"No Command Access"
 	{
 		"en"		"You do not have access to this command."

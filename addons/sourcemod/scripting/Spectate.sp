@@ -51,7 +51,7 @@ public Plugin myinfo =
 	name		= "Spectate",
 	description	= "Adds a command to spectate specific players and removes broken spectate mode.",
 	author		= "Obus, BotoX, maxime1907, .Rushaway",
-	version		= "1.6.2",
+	version		= "1.6.3",
 	url		= ""
 }
 
@@ -252,10 +252,8 @@ public Action Command_SpectateList(int client, int argc)
 
 			int iTarget;
 			if ((iTarget = FindTarget(client, sTarget, false, false)) <= 0)
-			{
-				CReplyToCommand(client, "%s %t", CHAT_PREFIX, "Invalid Target");
 				return Plugin_Handled;
-			}
+
 			if (!IsPlayerAlive(iTarget))
 			{
 				CReplyToCommand(client, "%s %t", CHAT_PREFIX, "Target must be alive");
@@ -269,8 +267,8 @@ public Action Command_SpectateList(int client, int argc)
 		}
 	}
 
-	if (g_cSpecListAdminOnly.IntValue == 0 || g_cSpecListAdminOnly.IntValue == -1 || g_cSpecListAdminOnly.IntValue == 1 
-		&& CheckCommandAccess(client, "sm_admin", ADMFLAG_GENERIC, true) && IsValidClient(client))
+	if ((g_cSpecListAdminOnly.IntValue == 0 || g_cSpecListAdminOnly.IntValue == -1 || g_cSpecListAdminOnly.IntValue == 1 
+		&& CheckCommandAccess(client, "sm_admin", ADMFLAG_GENERIC, true)) && IsValidClient(client))
 			PrintSpectateList(client, client);
 
 	return Plugin_Handled;
