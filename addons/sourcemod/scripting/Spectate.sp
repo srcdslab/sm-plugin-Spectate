@@ -50,7 +50,7 @@ public Plugin myinfo =
 	name		= "Spectate",
 	description	= "Adds a command to spectate specific players and removes broken spectate mode.",
 	author		= "Obus, BotoX, maxime1907, .Rushaway",
-	version		= "1.6.5",
+	version		= "1.6.6",
 	url		= ""
 }
 
@@ -279,6 +279,11 @@ public Action Command_Spectate(int client, int argc)
 		return Plugin_Handled;
 	}
 
+	// A connected client that is not in game yet (still loading, or a bind
+	// fired during connection) would make GetClientTeam throw.
+	if (!IsClientInGame(client))
+		return Plugin_Handled;
+
 	if (!AdminHelper_IsClientAuthorized(client))
 	{
 		CPrintToChat(client, "%s %t", CHAT_PREFIX, "No Command Access");
@@ -411,6 +416,11 @@ public Action Timer_SwitchBackToTeam(Handle timer, int userid)
 
 public Action Command_SpectateViaConsole(int client, char[] command, int args)
 {
+	// Same as Command_Spectate: IsPlayerAlive and the reply throw on a
+	// client that is not in game. The command stays blocked either way.
+	if (!client || !IsClientInGame(client))
+		return Plugin_Handled;
+
 	if (!g_cEnable.BoolValue)
 	{
 		CReplyToCommand(client, "%s %t", CHAT_PREFIX, "Spec Disabled");
