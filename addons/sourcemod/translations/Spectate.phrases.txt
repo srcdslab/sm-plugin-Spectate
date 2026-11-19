@@ -9,6 +9,12 @@
 		"de"		"Du hast keinen Zugriff auf diesen Befehl."
 		"pt"		"Você não tem acesso a este comando."
 		"chi"		"你无权使用此命令。"
+		"pl"		"Nie masz dostępu do tego polecenia."
+		"tr"		"Bu komuta erişimin yok."
+		"it"		"Non hai accesso a questo comando."
+		"ua"		"У вас немає доступу до цієї команди."
+		"zho"		"你無權使用此指令。"
+		"cze"		"K tomuto příkazu nemáš přístup."
 	}
 	"Spec Limit Reached"
 	{
@@ -20,6 +26,12 @@
 		"de"		"Du hast die maximale Anzahl erlaubter Spec-Wechsel erreicht ({1}/{2})."
 		"pt"		"Você usou o número máximo de specs permitidos ({1}/{2})."
 		"chi"		"你已用完允许的观察次数（{1}/{2}）。"
+		"pl"		"Wykorzystałeś maksymalną liczbę dozwolonych przejść do obserwatorów ({1}/{2})."
+		"tr"		"İzin verilen maksimum izleyici geçişi sayısını kullandın ({1}/{2})."
+		"it"		"Hai usato il numero massimo di spec consentiti ({1}/{2})."
+		"ua"		"Ви використали максимальну кількість дозволених переходів у спостерігачі ({1}/{2})."
+		"zho"		"你已用完允許的觀察次數（{1}/{2}）。"
+		"cze"		"Využil jsi maximální povolený počet přepnutí mezi diváky ({1}/{2})."
 	}
 	"Spec Item Owner"
 	{
@@ -30,6 +42,12 @@
 		"de"		"Du kannst nicht zu den Zuschauern wechseln, während du ein Item besitzt!"
 		"pt"		"Não é possível ir para espectador se você tiver um item!"
 		"chi"		"持有物品时无法切换到观察者！"
+		"pl"		"Nie możesz przejść do obserwatorów, jeśli posiadasz przedmiot!"
+		"tr"		"Bir eşyaya sahipsen izleyiciye geçemezsin!"
+		"it"		"Non puoi passare agli spettatori se possiedi un item!"
+		"ua"		"Не можна перейти в спостерігачі, якщо у вас є предмет!"
+		"zho"		"持有物品時無法切換到觀察者！"
+		"cze"		"Nemůžeš přejít mezi diváky, pokud vlastníš předmět!"
 	}
 	"Spec Last Zombie"
 	{
@@ -40,6 +58,12 @@
 		"de"		"Als letzter Zombie kannst du nicht zu den Zuschauern wechseln!"
 		"pt"		"Não é possível ir para espectador sendo o último zumbi!"
 		"chi"		"作为最后一个僵尸，你无法切换到观察者！"
+		"pl"		"Nie możesz przejść do obserwatorów jako ostatni zombie!"
+		"tr"		"Son zombi olarak izleyiciye geçemezsin!"
+		"it"		"Non puoi passare agli spettatori essendo l'ultimo zombie!"
+		"ua"		"Не можна перейти в спостерігачі, будучи останнім зомбі!"
+		"zho"		"作為最後一個殭屍，你無法切換到觀察者！"
+		"cze"		"Jako poslední zombie nemůžeš přejít mezi diváky!"
 	}
 	"Spec Disabled"
 	{
@@ -50,6 +74,12 @@
 		"de"		"Diese Funktion ist derzeit vom Serverbetreiber deaktiviert."
 		"pt"		"Este recurso está desativado no momento pelo administrador do servidor."
 		"chi"		"此功能目前已被服务器管理员禁用。"
+		"pl"		"Ta funkcja jest obecnie wyłączona przez właściciela serwera."
+		"tr"		"Bu özellik şu anda sunucu sahibi tarafından devre dışı bırakıldı."
+		"it"		"Questa funzione è attualmente disattivata dall'host del server."
+		"ua"		"Ця функція наразі вимкнена власником сервера."
+		"zho"		"此功能目前已被伺服器管理員停用。"
+		"cze"		"Tato funkce je momentálně vypnutá správcem serveru."
 	}
 	"Spec Used"
 	{
@@ -61,6 +91,12 @@
 		"de"		"Du hast {1}/{2} erlaubte Spec-Wechsel benutzt."
 		"pt"		"Você usou {1}/{2} specs permitidos."
 		"chi"		"你已使用 {1}/{2} 次允许的观察次数。"
+		"pl"		"Wykorzystano {1}/{2} dozwolonych przejść do obserwatorów."
+		"tr"		"İzin verilen {1}/{2} izleyici geçişini kullandın."
+		"it"		"Hai usato {1}/{2} spec consentiti."
+		"ua"		"Ви використали {1}/{2} дозволених переходів у спостерігачі."
+		"zho"		"你已使用 {1}/{2} 次允許的觀察次數。"
+		"cze"		"Využil jsi {1}/{2} povolených přepnutí mezi diváky."
 	}
 	"Spectating"
 	{
@@ -72,6 +108,12 @@
 		"de"		"Du beobachtest {olive}{1}{default}."
 		"pt"		"Observando {olive}{1}{default}."
 		"chi"		"正在观察 {olive}{1}{default}。"
+		"pl"		"Obserwujesz {olive}{1}{default}."
+		"tr"		"{olive}{1}{default} izleniyor."
+		"it"		"Stai osservando {olive}{1}{default}."
+		"ua"		"Ви спостерігаєте за {olive}{1}{default}."
+		"zho"		"正在觀察 {olive}{1}{default}。"
+		"cze"		"Sleduješ hráče {olive}{1}{default}."
 	}
 	"Spec Switch Back Timer"
 	{
@@ -83,6 +125,12 @@
 		"de"		"Du wirst in {1} Sekunden wieder in ein Team verschoben."
 		"pt"		"Você voltará para um time em {1} segundos."
 		"chi"		"你将在 {1} 秒后被移回队伍。"
+		"pl"		"Za {1} s zostaniesz przeniesiony z powrotem do drużyny."
+		"tr"		"{1} saniye içinde bir takıma geri alınacaksın."
+		"it"		"Tra {1} secondi tornerai in una squadra."
+		"ua"		"Через {1} с вас буде повернено до команди."
+		"zho"		"你將在 {1} 秒後被移回隊伍。"
+		"cze"		"Za {1} s budeš přesunut zpět do týmu."
 	}
 	"Spec Time Expired"
 	{
@@ -94,6 +142,12 @@
 		"de"		"Deine erlaubte Spec-Zeit ist abgelaufen. ({1} s)"
 		"pt"		"Seu tempo de spec permitido acabou. ({1}s)"
 		"chi"		"你的观察时间已到。（{1} 秒）"
+		"pl"		"Twój dozwolony czas obserwowania minął. ({1} s)"
+		"tr"		"İzin verilen izleme süren doldu. ({1} sn)"
+		"it"		"Il tuo tempo di spec consentito è scaduto. ({1} s)"
+		"ua"		"Ваш дозволений час у спостерігачах минув. ({1} с)"
+		"zho"		"你的觀察時間已到。（{1} 秒）"
+		"cze"		"Tvůj povolený čas mezi diváky vypršel. ({1} s)"
 	}
 	"Spec Switched Back"
 	{
@@ -104,6 +158,12 @@
 		"de"		"Du wurdest wieder zu den aktiven Spielern verschoben."
 		"pt"		"Você voltou a jogar com os jogadores ativos."
 		"chi"		"你已被移回，与活跃玩家一起游戏。"
+		"pl"		"Przeniesiono cię z powrotem do gry z aktywnymi graczami."
+		"tr"		"Seni tekrar aktif oyuncularla oynamaya aldık."
+		"it"		"Ti abbiamo rimesso in gioco con i giocatori attivi."
+		"ua"		"Вас повернуто в гру до активних гравців."
+		"zho"		"你已被移回，與活躍玩家一起遊戲。"
+		"cze"		"Přesunuli jsme tě zpět do hry mezi aktivní hráče."
 	}
 	"Spectators None"
 	{
@@ -115,6 +175,12 @@
 		"de"		"Zuschauer von {green}{1}{default}: {olive}keine{default}."
 		"pt"		"Espectadores de {green}{1}{default}: {olive}nenhum{default}."
 		"chi"		"{green}{1}{default} 的观察者：{olive}无{default}。"
+		"pl"		"Obserwujący {green}{1}{default}: {olive}brak{default}."
+		"tr"		"{green}{1}{default} izleyenler: {olive}yok{default}."
+		"it"		"Spettatori di {green}{1}{default}: {olive}nessuno{default}."
+		"ua"		"Спостерігачі {green}{1}{default}: {olive}немає{default}."
+		"zho"		"{green}{1}{default} 的觀察者：{olive}無{default}。"
+		"cze"		"Diváci hráče {green}{1}{default}: {olive}nikdo{default}."
 	}
 	"Spectators List"
 	{
@@ -126,5 +192,11 @@
 		"de"		"Zuschauer von {green}{1}{default}: {olive}{2}"
 		"pt"		"Espectadores de {green}{1}{default}: {olive}{2}"
 		"chi"		"{green}{1}{default} 的观察者：{olive}{2}"
+		"pl"		"Obserwujący {green}{1}{default}: {olive}{2}"
+		"tr"		"{green}{1}{default} izleyenler: {olive}{2}"
+		"it"		"Spettatori di {green}{1}{default}: {olive}{2}"
+		"ua"		"Спостерігачі {green}{1}{default}: {olive}{2}"
+		"zho"		"{green}{1}{default} 的觀察者：{olive}{2}"
+		"cze"		"Diváci hráče {green}{1}{default}: {olive}{2}"
 	}
 }
